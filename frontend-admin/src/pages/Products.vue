@@ -2,7 +2,7 @@
   <div>
     <div class="flex items-center justify-between mb-6">
       <h2 class="text-2xl font-bold text-gray-900">商品管理</h2>
-      <router-link to="/admin/products/create" class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition text-sm font-medium">
+      <router-link to="/products/create" class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition text-sm font-medium">
         + 新增商品
       </router-link>
     </div>
@@ -60,7 +60,7 @@
             </td>
             <td class="px-4 py-3">
               <div class="flex gap-2">
-                <router-link :to="`/admin/products/${p.id}/edit`" class="text-primary-600 hover:underline text-xs">編輯</router-link>
+                <router-link :to="`/products/${p.id}/edit`" class="text-primary-600 hover:underline text-xs">編輯</router-link>
                 <button @click="toggleStatus(p)" class="text-xs" :class="p.status === 'active' ? 'text-red-500 hover:underline' : 'text-green-600 hover:underline'">
                   {{ p.status === 'active' ? '下架' : '上架' }}
                 </button>

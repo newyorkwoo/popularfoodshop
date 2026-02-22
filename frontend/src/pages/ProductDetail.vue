@@ -155,12 +155,11 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useCartStore } from '@/stores/cart'
 import { useWishlistStore } from '@/stores/wishlist'
 import { useUIStore } from '@/stores/ui'
-import { useAdminProductStore } from '@/stores/adminProduct'
-import { getProductBySlug, allProducts } from '@/data/products'
+import { getProductBySlug, getActiveProducts, loadProductStatus, getProductStatus } from '@/data/products'
 import ProductCard from '@/components/product/ProductCard.vue'
 import BaseBadge from '@/components/ui/BaseBadge.vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
@@ -169,10 +168,10 @@ import { StarIcon, HeartIcon, ShoppingBagIcon } from '@heroicons/vue/24/outline'
 import { HeartIcon as HeartIconSolid } from '@heroicons/vue/24/solid'
 
 const route = useRoute()
+const router = useRouter()
 const cartStore = useCartStore()
 const wishlistStore = useWishlistStore()
 const uiStore = useUIStore()
-const adminProductStore = useAdminProductStore()
 
 const loading = ref(true)
 const product = ref(null)
@@ -197,12 +196,8 @@ const isWishlisted = computed(() => product.value && wishlistStore.isInWishlist(
 
 const isArchived = computed(() => {
   if (!product.value) return false
-  const adminP = adminProductStore.products.find(p => p.id === product.value.id)
-  return adminP?.status === 'archived'
-})
-
-const archivedIds = computed(() => {
-  return new Set(adminProductStore.products.filter(p => p.status === 'archived').map(p => p.id))
+  const s = getProductStatus()[String(product.value.id)]
+  return s === 'archived'
 })
 
 const relatedProducts = ref([])
@@ -235,38 +230,22 @@ async function loadProduct() {
     if (found) {
       product.value = { ...found }
     } else {
-      // Fallback for unknown slugs
-      product.value = {
-        id: 999,
-        name: slug?.replace(/-/g, ' ') || 'Sample Product',
-        slug: slug,
-        brand: 'Sample Brand',
-        price: 580,
-        salePrice: 480,
-        image: 'https://placehold.co/600x600/FFF3E0/E65100?text=Product',
-        images: [
-          'https://placehold.co/600x600/FFF3E0/E65100?text=Image+1',
-          'https://placehold.co/600x600/E8F5E9/2E7D32?text=Image+2',
-          'https://placehold.co/600x600/E3F2FD/1565C0?text=Image+3',
-        ],
-        rating: 4.7,
-        reviewCount: 128,
-        inStock: true,
-        description: '嚴選優質食材，遵循傳統工法製作，保留最純粹的美味。每一口都是對品質的堅持。',
-        nutrition: '熱量：120kcal / 蛋白質：3g / 脂肪：5g / 碳水化合物：15g / 鈉：80mg',
-        stock: 50,
-      }
+      // Product not found — show 404
+      router.replace({ name: 'NotFound', params: { pathMatch: ['product', slug] } })
+      return
     }
-    // Related products: pick up to 4 products that aren't the current one and not archived
-    const archived = new Set(adminProductStore.products.filter(p => p.status === 'archived').map(p => p.id))
-    relatedProducts.value = allProducts
-      .filter((p) => p.id !== product.value.id && !archived.has(p.id))
+    // Related products: pick up to 4 products that aren't the current one
+    relatedProducts.value = getActiveProducts()
+      .filter((p) => p.id !== product.value.id)
       .slice(0, 4)
   } finally {
     loading.value = false
   }
 }
 
-onMounted(loadProduct)
+onMounted(async () => {
+  await loadProductStatus()
+  loadProduct()
+})
 watch(() => route.params.slug, loadProduct)
 </script>

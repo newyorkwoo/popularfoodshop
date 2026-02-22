@@ -42,7 +42,7 @@
               </select>
             </td>
             <td class="px-4 py-3">
-              <router-link :to="`/admin/orders/${o.id}`" class="text-primary-600 hover:underline text-xs">查看詳情</router-link>
+              <router-link :to="`/orders/${o.id}`" class="text-primary-600 hover:underline text-xs">查看詳情</router-link>
             </td>
           </tr>
         </tbody>

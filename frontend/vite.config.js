@@ -2,9 +2,10 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath, URL } from 'node:url'
+import sharedProductStatus from '../shared/vite-plugin-product-status.js'
 
 export default defineConfig({
-  plugins: [vue(), tailwindcss()],
+  plugins: [vue(), tailwindcss(), sharedProductStatus()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

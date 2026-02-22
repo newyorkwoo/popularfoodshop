@@ -140,7 +140,7 @@ async def refresh_token(data: RefreshTokenRequest, db: AsyncSession = Depends(ge
             detail="無效的 Refresh Token",
         )
 
-    user_id = payload.get("sub")
+    user_id = int(payload.get("sub"))
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
 

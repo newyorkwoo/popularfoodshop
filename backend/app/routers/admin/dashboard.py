@@ -10,7 +10,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.dependencies import get_current_admin
+from app.admin_dependencies import get_current_admin_user
 from app.models.order import Order
 from app.models.product import Product
 from app.models.user import User
@@ -21,7 +21,7 @@ router = APIRouter(prefix="/admin/dashboard", tags=["管理後台 - 儀表板"])
 
 @router.get("", response_model=SuccessResponse)
 async def dashboard(
-    current_admin=Depends(get_current_admin),
+    current_admin=Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db),
 ):
     """後台儀表板統計"""

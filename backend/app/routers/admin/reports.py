@@ -13,7 +13,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.dependencies import require_permission
+from app.admin_dependencies import require_admin_permission
 from app.models.order import Order, OrderItem
 from app.models.product import Product
 from app.models.user import User
@@ -27,7 +27,7 @@ async def sales_report(
     start_date: Optional[str] = Query(default=None, description="YYYY-MM-DD"),
     end_date: Optional[str] = Query(default=None, description="YYYY-MM-DD"),
     group_by: str = Query(default="day", regex="^(day|week|month)$"),
-    _=Depends(require_permission("reports.read")),
+    _=Depends(require_admin_permission("reports.read")),
     db: AsyncSession = Depends(get_db),
 ):
     """銷售報表"""
@@ -94,7 +94,7 @@ async def sales_report(
 async def products_report(
     limit: int = Query(default=20, ge=1, le=100),
     sort_by: str = Query(default="sold_count", regex="^(sold_count|revenue|view_count)$"),
-    _=Depends(require_permission("reports.read")),
+    _=Depends(require_admin_permission("reports.read")),
     db: AsyncSession = Depends(get_db),
 ):
     """商品銷售報表"""
@@ -146,7 +146,7 @@ async def products_report(
 
 @router.get("/users", response_model=SuccessResponse)
 async def users_report(
-    _=Depends(require_permission("reports.read")),
+    _=Depends(require_admin_permission("reports.read")),
     db: AsyncSession = Depends(get_db),
 ):
     """會員統計報表"""

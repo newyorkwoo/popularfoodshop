@@ -29,7 +29,7 @@ async def get_banners(
         .where(
             Banner.is_active == True,
             Banner.starts_at <= now,
-            (Banner.ends_at == None) | (Banner.ends_at >= now),
+            (Banner.expires_at == None) | (Banner.expires_at >= now),
         )
         .order_by(Banner.sort_order.asc())
     )
@@ -41,7 +41,7 @@ async def get_banners(
             "title": b.title,
             "subtitle": b.subtitle,
             "image_url": b.image_url,
-            "mobile_image_url": b.mobile_image_url,
+            "mobile_image_url": b.image_url_mobile,
             "link_url": b.link_url,
         }
         for b in banners
@@ -60,7 +60,7 @@ async def get_announcements(
         .where(
             Announcement.is_active == True,
             Announcement.starts_at <= now,
-            (Announcement.ends_at == None) | (Announcement.ends_at >= now),
+            (Announcement.expires_at == None) | (Announcement.expires_at >= now),
         )
         .order_by(Announcement.created_at.desc())
     )
@@ -69,7 +69,6 @@ async def get_announcements(
     data = [
         {
             "id": a.id,
-            "title": a.title,
             "content": a.content,
             "type": a.type,
             "link_url": a.link_url,

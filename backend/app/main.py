@@ -16,6 +16,7 @@ from app.middleware.security_headers import SecurityHeadersMiddleware
 
 # ── Import Routers ──────────────────────
 from app.routers import auth, brands, cart, categories, content, orders, payments, points, products, users, wishlist
+from app.routers.admin import auth as admin_auth
 from app.routers.admin import content as admin_content
 from app.routers.admin import dashboard as admin_dashboard
 from app.routers.admin import orders as admin_orders
@@ -55,7 +56,7 @@ app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(GZipMiddleware, minimum_size=500)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=settings.CORS_ORIGINS + settings.ADMIN_CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -89,7 +90,8 @@ app.include_router(wishlist.router, prefix=API_PREFIX)
 app.include_router(points.router, prefix=API_PREFIX)
 app.include_router(content.router, prefix=API_PREFIX)
 
-# ── Admin API Routes (/api/v1/admin/*) ───
+# ── Admin API Routes (/api/v1/admin/*) ── Independent auth ──
+app.include_router(admin_auth.router, prefix=API_PREFIX)
 app.include_router(admin_dashboard.router, prefix=API_PREFIX)
 app.include_router(admin_products.router, prefix=API_PREFIX)
 app.include_router(admin_orders.router, prefix=API_PREFIX)

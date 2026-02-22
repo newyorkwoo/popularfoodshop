@@ -25,7 +25,7 @@
       <div class="bg-white border border-gray-200 rounded-xl">
         <div class="flex items-center justify-between p-5 border-b">
           <h3 class="font-bold text-gray-900">最新訂單</h3>
-          <router-link to="/admin/orders" class="text-sm text-primary-600 hover:underline">查看全部</router-link>
+          <router-link to="/orders" class="text-sm text-primary-600 hover:underline">查看全部</router-link>
         </div>
         <div class="divide-y">
           <div v-for="order in recentOrders" :key="order.id" class="flex items-center justify-between px-5 py-3">
@@ -45,7 +45,7 @@
       <div class="bg-white border border-gray-200 rounded-xl">
         <div class="flex items-center justify-between p-5 border-b">
           <h3 class="font-bold text-gray-900">熱銷商品</h3>
-          <router-link to="/admin/products" class="text-sm text-primary-600 hover:underline">查看全部</router-link>
+          <router-link to="/products" class="text-sm text-primary-600 hover:underline">查看全部</router-link>
         </div>
         <div class="divide-y">
           <div v-for="(p, i) in topProducts" :key="p.id" class="flex items-center gap-3 px-5 py-3">

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex items-center gap-3 mb-6">
-      <router-link to="/admin/products" class="text-gray-400 hover:text-gray-600"><ArrowLeftIcon class="w-5 h-5" /></router-link>
+      <router-link to="/products" class="text-gray-400 hover:text-gray-600"><ArrowLeftIcon class="w-5 h-5" /></router-link>
       <h2 class="text-2xl font-bold text-gray-900">編輯商品</h2>
     </div>
     <!-- Reusing same form structure as ProductCreate -->
@@ -50,7 +50,7 @@
         </div>
       </div>
       <div class="flex justify-end gap-3">
-        <router-link to="/admin/products" class="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">取消</router-link>
+        <router-link to="/products" class="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">取消</router-link>
         <BaseButton type="submit" :loading="saving">更新商品</BaseButton>
       </div>
     </form>
@@ -100,6 +100,6 @@ async function handleSave() {
   await new Promise(r => setTimeout(r, 500))
   adminProductStore.updateProduct(route.params.id, { ...form })
   saving.value = false
-  router.push('/admin/products')
+  router.push('/products')
 }
 </script>

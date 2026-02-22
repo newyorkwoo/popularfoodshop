@@ -73,14 +73,6 @@
         <!-- Footer actions -->
         <div class="border-t border-gray-100 p-5 space-y-2.5">
           <template v-if="authStore.isAuthenticated">
-            <router-link
-              v-if="authStore.isAdmin"
-              to="/admin"
-              class="block w-full text-center py-2.5 text-sm font-semibold text-primary-600 border-2 border-primary-600 rounded-xl hover:bg-primary-50 transition-colors"
-              @click="uiStore.toggleMobileMenu(false)"
-            >
-              管理後台
-            </router-link>
             <button
               class="block w-full py-2.5 text-sm font-semibold text-red-600 border border-red-200 rounded-xl hover:bg-red-50 transition-colors"
               @click="authStore.logout(); uiStore.toggleMobileMenu(false)"

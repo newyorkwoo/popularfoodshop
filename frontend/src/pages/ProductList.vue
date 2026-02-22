@@ -180,8 +180,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useProductStore } from '@/stores/product'
-import { allProducts } from '@/data/products'
-import { useAdminProductStore } from '@/stores/adminProduct'
+import { getActiveProducts, loadProductStatus } from '@/data/products'
 import ProductCard from '@/components/product/ProductCard.vue'
 import BasePagination from '@/components/ui/BasePagination.vue'
 import BaseSkeleton from '@/components/ui/BaseSkeleton.vue'
@@ -190,7 +189,6 @@ import { FunnelIcon, MagnifyingGlassIcon, XMarkIcon } from '@heroicons/vue/24/ou
 const route = useRoute()
 const router = useRouter()
 const productStore = useProductStore()
-const adminProductStore = useAdminProductStore()
 const showMobileFilters = ref(false)
 
 const categories = [
@@ -238,13 +236,8 @@ function changePage(page) {
 function loadProducts() {
   productStore.loading = true
 
-  // Start with full catalog, excluding archived products
-  const archivedIds = new Set(
-    adminProductStore.products
-      .filter(p => p.status === 'archived')
-      .map(p => p.id)
-  )
-  let filtered = allProducts.filter(p => !archivedIds.has(p.id))
+  // Start with full catalog (backend API will handle archived filtering)
+  let filtered = [...getActiveProducts()]
 
   // Category filter
   const categoryFilter = productStore.filters.category
@@ -285,7 +278,8 @@ function loadProducts() {
   productStore.loading = false
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await loadProductStatus()
   // Use route param slug as initial category filter
   const slug = route.params.slug
   if (slug) {

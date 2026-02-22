@@ -36,7 +36,7 @@ async def list_brands(
             "id": b.id,
             "name": b.name,
             "slug": b.slug,
-            "logo": b.logo,
+            "logo": b.logo_url,
             "description": b.description,
             "country": b.country,
         }
@@ -62,9 +62,9 @@ async def get_brand(
         "id": brand.id,
         "name": brand.name,
         "slug": brand.slug,
-        "logo": brand.logo,
+        "logo": brand.logo_url,
         "description": brand.description,
-        "website": brand.website,
+        "website": brand.website_url,
         "country": brand.country,
     })
 
@@ -116,6 +116,6 @@ async def brand_products(
         })
 
     return SuccessResponse(
-        data={"brand": {"id": brand.id, "name": brand.name, "slug": brand.slug, "logo": brand.logo}, "products": data},
+        data={"brand": {"id": brand.id, "name": brand.name, "slug": brand.slug, "logo": brand.logo_url}, "products": data},
         meta=meta,
     )

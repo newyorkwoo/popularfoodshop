@@ -16,7 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.database import get_db
-from app.dependencies import get_current_admin, require_permission
+from app.admin_dependencies import get_current_admin_user, require_admin_permission
 from app.models.product import Product, ProductImage, ProductVariant
 from app.schemas.common import SuccessResponse
 from app.schemas.product import ProductCreate, ProductUpdate
@@ -34,7 +34,7 @@ async def list_products(
     is_active: Optional[bool] = None,
     page: int = Query(default=1, ge=1),
     per_page: int = Query(default=20, ge=1, le=100),
-    _=Depends(require_permission("products.read")),
+    _=Depends(require_admin_permission("products.read")),
     db: AsyncSession = Depends(get_db),
 ):
     """列出所有商品（含搜尋篩選）"""
@@ -86,7 +86,7 @@ async def list_products(
 @router.post("", response_model=SuccessResponse, status_code=status.HTTP_201_CREATED)
 async def create_product(
     data: ProductCreate,
-    _=Depends(require_permission("products.write")),
+    _=Depends(require_admin_permission("products.write")),
     db: AsyncSession = Depends(get_db),
 ):
     """新增商品"""
@@ -153,7 +153,7 @@ async def create_product(
 @router.get("/{product_id}", response_model=SuccessResponse)
 async def get_product(
     product_id: int,
-    _=Depends(require_permission("products.read")),
+    _=Depends(require_admin_permission("products.read")),
     db: AsyncSession = Depends(get_db),
 ):
     """取得商品詳情"""
@@ -220,7 +220,7 @@ async def get_product(
 async def update_product(
     product_id: int,
     data: ProductUpdate,
-    _=Depends(require_permission("products.write")),
+    _=Depends(require_admin_permission("products.write")),
     db: AsyncSession = Depends(get_db),
 ):
     """更新商品"""
@@ -245,7 +245,7 @@ async def update_product(
 @router.delete("/{product_id}", response_model=SuccessResponse)
 async def delete_product(
     product_id: int,
-    _=Depends(require_permission("products.delete")),
+    _=Depends(require_admin_permission("products.delete")),
     db: AsyncSession = Depends(get_db),
 ):
     """刪除商品（軟刪除）"""

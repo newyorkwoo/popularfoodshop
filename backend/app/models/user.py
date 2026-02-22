@@ -4,7 +4,7 @@ User models — users, user_addresses, user_cards
 
 from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, DateTime, Integer, String, Text, Enum as SAEnum
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, Enum as SAEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -62,7 +62,7 @@ class UserAddress(Base):
     __tablename__ = "user_addresses"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     label: Mapped[str | None] = mapped_column(String(50), nullable=True)  # 家、公司
     recipient_name: Mapped[str] = mapped_column(String(100), nullable=False)
     phone: Mapped[str] = mapped_column(String(20), nullable=False)
@@ -91,7 +91,7 @@ class UserCard(Base):
     __tablename__ = "user_cards"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     card_token: Mapped[str] = mapped_column(String(255), nullable=False)  # 第三方支付 token
     last_four: Mapped[str] = mapped_column(String(4), nullable=False)
     card_type: Mapped[str] = mapped_column(String(20), nullable=False)  # visa / mastercard / jcb

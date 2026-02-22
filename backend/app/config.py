@@ -47,11 +47,21 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
+    # ===== Admin JWT (separate secrets & shorter expiry) =====
+    ADMIN_JWT_SECRET_KEY: str = "change-me-admin-secret-key-in-production"
+    ADMIN_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    ADMIN_REFRESH_TOKEN_EXPIRE_DAYS: int = 1
+    ADMIN_ALLOWED_IPS: List[str] = []  # Empty = allow all; in production add IP whitelist
+
     # ===== Security =====
     SECRET_KEY: str = "change-me-to-another-secure-random-key"
     CORS_ORIGINS: List[str] = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+    ]
+    ADMIN_CORS_ORIGINS: List[str] = [
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
     ]
     ALLOWED_HOSTS: List[str] = ["*"]
 

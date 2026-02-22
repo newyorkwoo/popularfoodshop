@@ -14,7 +14,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.dependencies import require_permission
+from app.admin_dependencies import require_admin_permission
 from app.models.shipping import ShippingMethod
 from app.schemas.common import SuccessResponse
 
@@ -44,7 +44,7 @@ class ShippingMethodUpdate(BaseModel):
 
 @router.get("/shipping-methods", response_model=SuccessResponse)
 async def list_shipping_methods(
-    _=Depends(require_permission("settings.read")),
+    _=Depends(require_admin_permission("settings.read")),
     db: AsyncSession = Depends(get_db),
 ):
     """列出運送方式"""
@@ -73,7 +73,7 @@ async def list_shipping_methods(
 @router.post("/shipping-methods", response_model=SuccessResponse, status_code=status.HTTP_201_CREATED)
 async def create_shipping_method(
     data: ShippingMethodCreate,
-    _=Depends(require_permission("settings.write")),
+    _=Depends(require_admin_permission("settings.write")),
     db: AsyncSession = Depends(get_db),
 ):
     """新增運送方式"""
@@ -93,7 +93,7 @@ async def create_shipping_method(
 async def update_shipping_method(
     method_id: int,
     data: ShippingMethodUpdate,
-    _=Depends(require_permission("settings.write")),
+    _=Depends(require_admin_permission("settings.write")),
     db: AsyncSession = Depends(get_db),
 ):
     """更新運送方式"""
@@ -112,7 +112,7 @@ async def update_shipping_method(
 @router.delete("/shipping-methods/{method_id}", response_model=SuccessResponse)
 async def delete_shipping_method(
     method_id: int,
-    _=Depends(require_permission("settings.delete")),
+    _=Depends(require_admin_permission("settings.delete")),
     db: AsyncSession = Depends(get_db),
 ):
     """停用運送方式"""

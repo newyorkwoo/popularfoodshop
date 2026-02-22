@@ -40,7 +40,9 @@ async def create_order(
     cart_result = await db.execute(
         select(CartItem)
         .where(CartItem.user_id == current_user.id)
-        .options(selectinload(CartItem.product))
+        .options(
+            selectinload(CartItem.product).selectinload(Product.images),
+        )
     )
     cart_items = cart_result.scalars().all()
 
@@ -118,9 +120,9 @@ async def create_order(
 
     # Shipping
     shipping_fee = 0
-    if data.shipping_method_id:
+    if data.shipping_method:
         sm_result = await db.execute(
-            select(ShippingMethod).where(ShippingMethod.id == data.shipping_method_id)
+            select(ShippingMethod).where(ShippingMethod.code == data.shipping_method)
         )
         shipping_method = sm_result.scalar_one_or_none()
         if shipping_method:
@@ -153,7 +155,7 @@ async def create_order(
             "district": data.shipping_address.district,
             "address": data.shipping_address.address,
         },
-        note=data.note,
+        customer_notes=data.customer_notes,
     )
     db.add(order)
     await db.flush()
@@ -167,10 +169,9 @@ async def create_order(
             variant_id=oi["variant_id"],
             product_name=product.name,
             product_image=product.primary_image,
-            product_sku=product.sku,
             unit_price=oi["unit_price"],
             quantity=oi["quantity"],
-            total_price=oi["total_price"],
+            subtotal=oi["total_price"],
         ))
         product.stock -= oi["quantity"]
         product.sold_count += oi["quantity"]
@@ -261,17 +262,16 @@ async def get_order(
         "payment_status": order.payment_status,
         "shipping_address": order.shipping_address,
         "tracking_number": order.tracking_number,
-        "note": order.note,
+        "note": order.customer_notes,
         "items": [
             {
                 "id": oi.id,
                 "product_id": oi.product_id,
                 "product_name": oi.product_name,
                 "product_image": oi.product_image,
-                "product_sku": oi.product_sku,
                 "unit_price": float(oi.unit_price),
                 "quantity": oi.quantity,
-                "total_price": float(oi.total_price),
+                "subtotal": float(oi.subtotal),
             }
             for oi in order.items
         ],

@@ -42,3 +42,6 @@ htmlcov/
 # ── Build ────────────────────────
 build/
 *.whl
+
+# ── Shared runtime data ─────────
+shared/product-status.json

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import NProgress from 'nprogress'
+import { useAuthStore } from '@/stores/auth'
 
 const routes = [
   // ===== Public Pages =====
@@ -12,6 +13,12 @@ const routes = [
         name: 'Home',
         component: () => import('@/pages/Home.vue'),
         meta: { title: '首頁' },
+      },
+      {
+        path: 'products',
+        name: 'AllProducts',
+        component: () => import('@/pages/ProductList.vue'),
+        meta: { title: '所有商品' },
       },
       {
         path: 'category/:slug',
@@ -217,93 +224,6 @@ const routes = [
     ],
   },
 
-  // ===== Admin Pages =====
-  {
-    path: '/admin',
-    component: () => import('@/layouts/AdminLayout.vue'),
-    meta: { requiresAuth: true, requiresAdmin: true },
-    children: [
-      {
-        path: '',
-        name: 'AdminDashboard',
-        component: () => import('@/pages/admin/Dashboard.vue'),
-        meta: { title: '管理儀表板' },
-      },
-      {
-        path: 'products',
-        name: 'AdminProducts',
-        component: () => import('@/pages/admin/Products.vue'),
-        meta: { title: '商品管理' },
-      },
-      {
-        path: 'products/create',
-        name: 'AdminProductCreate',
-        component: () => import('@/pages/admin/ProductCreate.vue'),
-        meta: { title: '新增商品' },
-      },
-      {
-        path: 'products/:id/edit',
-        name: 'AdminProductEdit',
-        component: () => import('@/pages/admin/ProductEdit.vue'),
-        meta: { title: '編輯商品' },
-      },
-      {
-        path: 'categories',
-        name: 'AdminCategories',
-        component: () => import('@/pages/admin/Categories.vue'),
-        meta: { title: '分類管理' },
-      },
-      {
-        path: 'brands',
-        name: 'AdminBrands',
-        component: () => import('@/pages/admin/Brands.vue'),
-        meta: { title: '品牌管理' },
-      },
-      {
-        path: 'orders',
-        name: 'AdminOrders',
-        component: () => import('@/pages/admin/Orders.vue'),
-        meta: { title: '訂單管理' },
-      },
-      {
-        path: 'orders/:id',
-        name: 'AdminOrderDetail',
-        component: () => import('@/pages/admin/OrderDetail.vue'),
-        meta: { title: '訂單詳情' },
-      },
-      {
-        path: 'users',
-        name: 'AdminUsers',
-        component: () => import('@/pages/admin/Users.vue'),
-        meta: { title: '會員管理' },
-      },
-      {
-        path: 'promotions',
-        name: 'AdminPromotions',
-        component: () => import('@/pages/admin/Promotions.vue'),
-        meta: { title: '促銷管理' },
-      },
-      {
-        path: 'content',
-        name: 'AdminContent',
-        component: () => import('@/pages/admin/Content.vue'),
-        meta: { title: '內容管理' },
-      },
-      {
-        path: 'reports',
-        name: 'AdminReports',
-        component: () => import('@/pages/admin/Reports.vue'),
-        meta: { title: '數據報表' },
-      },
-      {
-        path: 'settings',
-        name: 'AdminSettings',
-        component: () => import('@/pages/admin/Settings.vue'),
-        meta: { title: '系統設定' },
-      },
-    ],
-  },
-
   // ===== 404 =====
   {
     path: '/:pathMatch(.*)*',
@@ -330,7 +250,7 @@ const router = createRouter({
 NProgress.configure({ showSpinner: false, speed: 300, minimum: 0.2 })
 
 // Navigation guards
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   // Only show progress bar for actual page changes
   if (to.path !== from.path) {
     NProgress.start()
@@ -340,23 +260,22 @@ router.beforeEach((to, from, next) => {
   const baseTitle = 'Popular Food Shop'
   document.title = to.meta.title ? `${to.meta.title} | ${baseTitle}` : baseTitle
 
-  // Auth check
-  const token = localStorage.getItem('token')
-  const userStr = localStorage.getItem('user')
-  const user = userStr ? JSON.parse(userStr) : null
+  // Use auth store for reliable authentication state
+  const authStore = useAuthStore()
 
-  if (to.meta.requiresAuth && !token) {
+  // If we have a token but no user loaded yet, try to fetch user first
+  if (authStore.token && !authStore.user) {
+    await authStore.fetchUser()
+  }
+
+  const isAuthenticated = authStore.isAuthenticated
+
+  if (to.meta.requiresAuth && !isAuthenticated) {
     next({ name: 'Login', query: { redirect: to.fullPath } })
     return
   }
 
-  if (to.meta.guestOnly && token && user) {
-    next({ name: 'Home' })
-    return
-  }
-
-  const adminRoles = ['admin', 'super_admin', 'superadmin', 'editor']
-  if (to.meta.requiresAdmin && (!user || !adminRoles.includes(user.role))) {
+  if (to.meta.guestOnly && isAuthenticated) {
     next({ name: 'Home' })
     return
   }

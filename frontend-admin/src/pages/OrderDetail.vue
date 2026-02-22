@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex items-center gap-3 mb-6">
-      <router-link to="/admin/orders" class="text-gray-400 hover:text-gray-600"><ArrowLeftIcon class="w-5 h-5" /></router-link>
+      <router-link to="/orders" class="text-gray-400 hover:text-gray-600"><ArrowLeftIcon class="w-5 h-5" /></router-link>
       <h2 class="text-2xl font-bold text-gray-900">訂單詳情</h2>
     </div>
 

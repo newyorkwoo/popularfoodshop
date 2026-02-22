@@ -37,7 +37,7 @@ async def list_categories(
             "name": cat.name,
             "slug": cat.slug,
             "description": cat.description,
-            "image": cat.image,
+            "image": cat.image_url,
             "sort_order": cat.sort_order,
             "children": [
                 serialize(child) for child in cat.children if child.is_active
@@ -68,7 +68,7 @@ async def get_category(
         "name": cat.name,
         "slug": cat.slug,
         "description": cat.description,
-        "image": cat.image,
+        "image": cat.image_url,
         "children": [
             {"id": c.id, "name": c.name, "slug": c.slug}
             for c in cat.children if c.is_active

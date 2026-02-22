@@ -28,16 +28,13 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import ProductCard from '@/components/product/ProductCard.vue'
-import { getProductsByBrand } from '@/data/products'
-import { useAdminBrandStore } from '@/stores/adminBrand'
-import { useAdminProductStore } from '@/stores/adminProduct'
+import { getProductsByBrand, loadProductStatus } from '@/data/products'
 
 const route = useRoute()
-const adminBrandStore = useAdminBrandStore()
-const adminProductStore = useAdminProductStore()
+const statusReady = ref(false)
 
 // Brand catalog with descriptions
 const brandCatalog = {
@@ -57,28 +54,17 @@ const slug = computed(() => route.params.slug)
 
 const brandInfo = computed(() => brandCatalog[slug.value] || { name: slug.value, description: '', logo: 'https://placehold.co/100x100/F3F4F6/6B7280?text=Brand' })
 
-// Check if this brand is disabled in admin
-const isBrandActive = computed(() => {
-  const adminBrand = adminBrandStore.brands.find(b => b.slug === slug.value)
-  return adminBrand ? adminBrand.active : true
-})
-
-// If brand is disabled, show no products; otherwise filter out archived products
-const products = computed(() => {
-  if (!isBrandActive.value) return []
-  const allBrandProducts = getProductsByBrand(slug.value)
-  // Build a set of archived product IDs from admin store
-  const archivedIds = new Set(
-    adminProductStore.products
-      .filter(p => p.status === 'archived')
-      .map(p => p.id)
-  )
-  return allBrandProducts.filter(p => !archivedIds.has(p.id))
-})
+// Products for this brand (backend API will handle active/archived filtering)
+const products = computed(() => statusReady.value ? getProductsByBrand(slug.value) : getProductsByBrand(slug.value))
 
 const brand = computed(() => ({
   ...brandInfo.value,
   slug: slug.value,
   productCount: products.value.length,
 }))
+
+onMounted(async () => {
+  await loadProductStatus()
+  statusReady.value = true
+})
 </script>

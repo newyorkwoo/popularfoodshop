@@ -38,8 +38,9 @@ async def get_current_user(
             settings.JWT_SECRET_KEY,
             algorithms=[settings.JWT_ALGORITHM],
         )
-        user_id: int = payload.get("sub")
+        user_id_str = payload.get("sub")
         token_type: str = payload.get("type", "access")
+        user_id = int(user_id_str) if user_id_str else None
 
         if user_id is None or token_type != "access":
             raise HTTPException(

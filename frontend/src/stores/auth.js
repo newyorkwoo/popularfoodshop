@@ -6,16 +6,6 @@ import authService from '@/services/authService'
 // Dev-mode mock accounts (matches backend seeds)
 const MOCK_ACCOUNTS = [
   {
-    email: 'admin@popularfoodshop.com',
-    password: 'Admin@123456',
-    user: { id: 1, email: 'admin@popularfoodshop.com', firstName: '管理員', lastName: '系統', role: 'super_admin', phone: '' },
-  },
-  {
-    email: 'editor@popularfoodshop.com',
-    password: 'Editor@123456',
-    user: { id: 2, email: 'editor@popularfoodshop.com', firstName: '編輯', lastName: '內容', role: 'editor', phone: '' },
-  },
-  {
     email: 'user@example.com',
     password: 'User@123456',
     user: { id: 3, email: 'user@example.com', firstName: '會員', lastName: '測試', role: 'customer', phone: '0912345678' },
@@ -34,7 +24,6 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Getters
   const isAuthenticated = computed(() => !!token.value && !!user.value)
-  const isAdmin = computed(() => ['admin', 'super_admin', 'superadmin', 'editor'].includes(user.value?.role))
   const fullName = computed(() => {
     if (!user.value) return ''
     return `${user.value.lastName || ''}${user.value.firstName || ''}`
@@ -210,7 +199,7 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.removeItem('token')
       localStorage.removeItem('refreshToken')
       localStorage.removeItem('user')
-      router.push({ name: 'Login' })
+      router.push({ name: 'Home' })
     }
   }
 
@@ -230,7 +219,6 @@ export const useAuthStore = defineStore('auth', () => {
     loading,
     error,
     isAuthenticated,
-    isAdmin,
     fullName,
     login,
     register,

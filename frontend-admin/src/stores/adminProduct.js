@@ -53,6 +53,18 @@ export const useAdminProductStore = defineStore('adminProduct', () => {
   function persist() {
     localStorage.setItem('adminProducts', JSON.stringify(products.value))
     localStorage.setItem('adminProductsVer', String(SEED_VERSION))
+    // Sync all product statuses to share file so consumer frontend can read
+    syncStatusToShared()
+  }
+
+  /** Push every product's status to the shared JSON file via Vite dev API. */
+  function syncStatusToShared() {
+    const payload = products.value.map(p => ({ id: p.id, status: p.status }))
+    fetch('/api/product-status/bulk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ products: payload }),
+    }).catch(() => { /* ignore in production – backend API handles it */ })
   }
 
   // Getters
@@ -121,6 +133,9 @@ export const useAdminProductStore = defineStore('adminProduct', () => {
     nextId = Math.max(...products.value.map(p => p.id)) + 1
     persist()
   }
+
+  // Initial sync on store creation — populate shared file with current statuses
+  syncStatusToShared()
 
   return {
     products,

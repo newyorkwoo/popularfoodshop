@@ -42,23 +42,17 @@ import { useRoute, useRouter } from 'vue-router'
 import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
 import ProductCard from '@/components/product/ProductCard.vue'
 import BaseSkeleton from '@/components/ui/BaseSkeleton.vue'
-import { allProducts as catalogProducts, searchProducts } from '@/data/products'
-import { useAdminProductStore } from '@/stores/adminProduct'
+import { searchProducts, loadProductStatus } from '@/data/products'
 
 const route = useRoute()
 const router = useRouter()
-const adminProductStore = useAdminProductStore()
 
 const query = computed(() => route.query.q || '')
 const searchInput = ref(query.value)
 const loading = ref(false)
 
-const archivedIds = computed(() => {
-  return new Set(adminProductStore.products.filter(p => p.status === 'archived').map(p => p.id))
-})
-
 const filteredProducts = computed(() => {
-  return searchProducts(query.value).filter(p => !archivedIds.value.has(p.id))
+  return searchProducts(query.value)
 })
 
 function doSearch() {
@@ -69,8 +63,8 @@ function doSearch() {
 
 watch(query, (v) => { searchInput.value = v })
 
-onMounted(() => {
-  // TODO: fetch from API
+onMounted(async () => {
+  await loadProductStatus()
   loading.value = true
   setTimeout(() => { loading.value = false }, 500)
 })

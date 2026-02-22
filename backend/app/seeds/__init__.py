@@ -29,7 +29,8 @@ async def seed_users(db: AsyncSession):
         User(
             email="admin@popularfoodshop.com",
             password_hash=hash_password("Admin@123456"),
-            name="系統管理員",
+            first_name="管理員",
+            last_name="系統",
             role="super_admin",
             is_active=True,
             is_verified=True,
@@ -39,7 +40,8 @@ async def seed_users(db: AsyncSession):
         User(
             email="editor@popularfoodshop.com",
             password_hash=hash_password("Editor@123456"),
-            name="內容編輯",
+            first_name="編輯",
+            last_name="內容",
             role="editor",
             is_active=True,
             is_verified=True,
@@ -49,7 +51,8 @@ async def seed_users(db: AsyncSession):
         User(
             email="user@example.com",
             password_hash=hash_password("User@123456"),
-            name="測試會員",
+            first_name="會員",
+            last_name="測試",
             phone="0912345678",
             role="customer",
             is_active=True,
@@ -103,13 +106,13 @@ async def seed_categories(db: AsyncSession):
     count = 0
     for cat_data in categories_data:
         children_data = cat_data.pop("children", [])
-        parent = Category(**cat_data, image=f"https://placehold.co/400x300?text={cat_data['name']}")
+        parent = Category(**cat_data, image_url=f"https://placehold.co/400x300?text={cat_data['name']}")
         db.add(parent)
         await db.flush()
         count += 1
 
         for child_data in children_data:
-            child = Category(**child_data, parent_id=parent.id, image=f"https://placehold.co/400x300?text={child_data['name']}")
+            child = Category(**child_data, parent_id=parent.id, image_url=f"https://placehold.co/400x300?text={child_data['name']}")
             db.add(child)
             count += 1
 
@@ -131,7 +134,7 @@ async def seed_brands(db: AsyncSession):
         {"name": "日清", "slug": "nissin", "description": "杯麵發明者", "country": "日本", "sort_order": 10},
     ]
     for b in brands_data:
-        brand = Brand(**b, logo=f"https://placehold.co/200x80?text={b['name']}")
+        brand = Brand(**b, logo_url=f"https://placehold.co/200x80?text={b['name']}")
         db.add(brand)
     print(f"  ✓ Created {len(brands_data)} brands")
 
@@ -373,7 +376,7 @@ async def seed_content(db: AsyncSession):
             title="夏日特賣 全館85折",
             subtitle="限時三天，結帳輸入 SUMMER85",
             image_url="https://placehold.co/1920x600?text=Summer+Sale+85%25+OFF",
-            mobile_image_url="https://placehold.co/800x800?text=Summer+Sale",
+            image_url_mobile="https://placehold.co/800x800?text=Summer+Sale",
             link_url="/products?tag=summer",
             sort_order=1,
             is_active=True,
@@ -383,7 +386,7 @@ async def seed_content(db: AsyncSession):
             title="新品上架 — 瑞士蓮精品巧克力",
             subtitle="品味頂級可可的純粹",
             image_url="https://placehold.co/1920x600?text=Lindt+New+Arrival",
-            mobile_image_url="https://placehold.co/800x800?text=Lindt",
+            image_url_mobile="https://placehold.co/800x800?text=Lindt",
             link_url="/brands/lindt",
             sort_order=2,
             is_active=True,
@@ -393,7 +396,7 @@ async def seed_content(db: AsyncSession):
             title="滿 $1500 免運費",
             subtitle="全站商品，輕鬆湊免運",
             image_url="https://placehold.co/1920x600?text=Free+Shipping+$1500",
-            mobile_image_url="https://placehold.co/800x800?text=Free+Shipping",
+            image_url_mobile="https://placehold.co/800x800?text=Free+Shipping",
             link_url="/products",
             sort_order=3,
             is_active=True,
@@ -405,16 +408,14 @@ async def seed_content(db: AsyncSession):
 
     announcements = [
         Announcement(
-            title="🎉 新會員註冊即送 100 點購物金！",
-            content="立即註冊成為會員，享受首購優惠",
+            content="🎉 新會員註冊即送 100 點購物金！立即註冊成為會員，享受首購優惠",
             type="promotion",
             link_url="/register",
             is_active=True,
             starts_at=datetime.utcnow(),
         ),
         Announcement(
-            title="📦 物流公告：颱風期間配送可能延遲",
-            content="受天氣影響，部分地區配送時間可能延長 1-2 天",
+            content="📦 物流公告：颱風期間配送可能延遲，部分地區配送時間可能延長 1-2 天",
             type="warning",
             is_active=True,
             starts_at=datetime.utcnow(),

@@ -12,7 +12,7 @@ from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.dependencies import require_permission
+from app.admin_dependencies import require_admin_permission
 from app.models.user import User
 from app.schemas.common import SuccessResponse
 from app.schemas.user import UserAdminUpdate
@@ -28,7 +28,7 @@ async def list_users(
     is_active: Optional[bool] = None,
     page: int = Query(default=1, ge=1),
     per_page: int = Query(default=20, ge=1, le=100),
-    _=Depends(require_permission("users.read")),
+    _=Depends(require_admin_permission("users.read")),
     db: AsyncSession = Depends(get_db),
 ):
     """列出所有會員"""
@@ -69,7 +69,7 @@ async def list_users(
 @router.get("/{user_id}", response_model=SuccessResponse)
 async def get_user(
     user_id: int,
-    _=Depends(require_permission("users.read")),
+    _=Depends(require_admin_permission("users.read")),
     db: AsyncSession = Depends(get_db),
 ):
     """取得會員詳情"""
@@ -101,7 +101,7 @@ async def get_user(
 async def update_user(
     user_id: int,
     data: UserAdminUpdate,
-    _=Depends(require_permission("users.write")),
+    _=Depends(require_admin_permission("users.write")),
     db: AsyncSession = Depends(get_db),
 ):
     """管理員更新會員資料"""

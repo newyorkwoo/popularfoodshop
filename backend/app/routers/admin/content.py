@@ -10,7 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.dependencies import require_permission
+from app.admin_dependencies import require_admin_permission
 from app.models.content import Announcement, Banner, FeaturedSection
 from app.schemas.common import SuccessResponse
 from app.utils.pagination import paginate
@@ -89,7 +89,7 @@ class FeaturedSectionUpdate(BaseModel):
 async def list_banners(
     page: int = Query(default=1, ge=1),
     per_page: int = Query(default=20, ge=1, le=50),
-    _=Depends(require_permission("content.read")),
+    _=Depends(require_admin_permission("content.read")),
     db: AsyncSession = Depends(get_db),
 ):
     query = select(Banner).order_by(Banner.sort_order.asc())
@@ -111,7 +111,7 @@ async def list_banners(
 @router.post("/banners", response_model=SuccessResponse, status_code=status.HTTP_201_CREATED)
 async def create_banner(
     data: BannerCreate,
-    _=Depends(require_permission("content.write")),
+    _=Depends(require_admin_permission("content.write")),
     db: AsyncSession = Depends(get_db),
 ):
     banner = Banner(**data.model_dump())
@@ -124,7 +124,7 @@ async def create_banner(
 async def update_banner(
     banner_id: int,
     data: BannerUpdate,
-    _=Depends(require_permission("content.write")),
+    _=Depends(require_admin_permission("content.write")),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(select(Banner).where(Banner.id == banner_id))
@@ -139,7 +139,7 @@ async def update_banner(
 @router.delete("/banners/{banner_id}", response_model=SuccessResponse)
 async def delete_banner(
     banner_id: int,
-    _=Depends(require_permission("content.delete")),
+    _=Depends(require_admin_permission("content.delete")),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(select(Banner).where(Banner.id == banner_id))
@@ -155,7 +155,7 @@ async def delete_banner(
 async def list_announcements(
     page: int = Query(default=1, ge=1),
     per_page: int = Query(default=20, ge=1, le=50),
-    _=Depends(require_permission("content.read")),
+    _=Depends(require_admin_permission("content.read")),
     db: AsyncSession = Depends(get_db),
 ):
     query = select(Announcement).order_by(Announcement.created_at.desc())
@@ -176,7 +176,7 @@ async def list_announcements(
 @router.post("/announcements", response_model=SuccessResponse, status_code=status.HTTP_201_CREATED)
 async def create_announcement(
     data: AnnouncementCreate,
-    _=Depends(require_permission("content.write")),
+    _=Depends(require_admin_permission("content.write")),
     db: AsyncSession = Depends(get_db),
 ):
     ann = Announcement(**data.model_dump())
@@ -189,7 +189,7 @@ async def create_announcement(
 async def update_announcement(
     ann_id: int,
     data: AnnouncementUpdate,
-    _=Depends(require_permission("content.write")),
+    _=Depends(require_admin_permission("content.write")),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(select(Announcement).where(Announcement.id == ann_id))
@@ -204,7 +204,7 @@ async def update_announcement(
 @router.delete("/announcements/{ann_id}", response_model=SuccessResponse)
 async def delete_announcement(
     ann_id: int,
-    _=Depends(require_permission("content.delete")),
+    _=Depends(require_admin_permission("content.delete")),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(select(Announcement).where(Announcement.id == ann_id))
@@ -220,7 +220,7 @@ async def delete_announcement(
 async def list_featured_sections(
     page: int = Query(default=1, ge=1),
     per_page: int = Query(default=20, ge=1, le=50),
-    _=Depends(require_permission("content.read")),
+    _=Depends(require_admin_permission("content.read")),
     db: AsyncSession = Depends(get_db),
 ):
     query = select(FeaturedSection).order_by(FeaturedSection.sort_order.asc())
@@ -239,7 +239,7 @@ async def list_featured_sections(
 @router.post("/featured-sections", response_model=SuccessResponse, status_code=status.HTTP_201_CREATED)
 async def create_featured_section(
     data: FeaturedSectionCreate,
-    _=Depends(require_permission("content.write")),
+    _=Depends(require_admin_permission("content.write")),
     db: AsyncSession = Depends(get_db),
 ):
     section = FeaturedSection(**data.model_dump())
@@ -252,7 +252,7 @@ async def create_featured_section(
 async def update_featured_section(
     section_id: int,
     data: FeaturedSectionUpdate,
-    _=Depends(require_permission("content.write")),
+    _=Depends(require_admin_permission("content.write")),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(select(FeaturedSection).where(FeaturedSection.id == section_id))
@@ -267,7 +267,7 @@ async def update_featured_section(
 @router.delete("/featured-sections/{section_id}", response_model=SuccessResponse)
 async def delete_featured_section(
     section_id: int,
-    _=Depends(require_permission("content.delete")),
+    _=Depends(require_admin_permission("content.delete")),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(select(FeaturedSection).where(FeaturedSection.id == section_id))

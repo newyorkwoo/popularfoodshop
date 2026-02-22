@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.database import get_db
-from app.dependencies import require_permission
+from app.admin_dependencies import require_admin_permission
 from app.models.order import Order, OrderItem, OrderStatusLog
 from app.models.user import User
 from app.schemas.common import SuccessResponse
@@ -41,7 +41,7 @@ async def list_orders(
     q: Optional[str] = None,
     page: int = Query(default=1, ge=1),
     per_page: int = Query(default=20, ge=1, le=100),
-    _=Depends(require_permission("orders.read")),
+    _=Depends(require_admin_permission("orders.read")),
     db: AsyncSession = Depends(get_db),
 ):
     """列出所有訂單"""
@@ -86,7 +86,7 @@ async def list_orders(
 @router.get("/{order_id}", response_model=SuccessResponse)
 async def get_order(
     order_id: int,
-    _=Depends(require_permission("orders.read")),
+    _=Depends(require_admin_permission("orders.read")),
     db: AsyncSession = Depends(get_db),
 ):
     """取得訂單詳情"""
@@ -155,7 +155,7 @@ async def get_order(
 async def update_order_status(
     order_id: int,
     data: OrderStatusUpdate,
-    _=Depends(require_permission("orders.write")),
+    _=Depends(require_admin_permission("orders.write")),
     db: AsyncSession = Depends(get_db),
 ):
     """更新訂單狀態"""

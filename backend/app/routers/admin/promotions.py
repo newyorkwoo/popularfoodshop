@@ -14,7 +14,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.dependencies import require_permission
+from app.admin_dependencies import require_admin_permission
 from app.models.coupon import Coupon
 from app.schemas.common import SuccessResponse
 from app.schemas.order import CouponCreate, CouponUpdate
@@ -28,7 +28,7 @@ async def list_coupons(
     is_active: Optional[bool] = None,
     page: int = Query(default=1, ge=1),
     per_page: int = Query(default=20, ge=1, le=100),
-    _=Depends(require_permission("promotions.read")),
+    _=Depends(require_admin_permission("promotions.read")),
     db: AsyncSession = Depends(get_db),
 ):
     """列出所有優惠券"""
@@ -63,7 +63,7 @@ async def list_coupons(
 @router.post("/coupons", response_model=SuccessResponse, status_code=status.HTTP_201_CREATED)
 async def create_coupon(
     data: CouponCreate,
-    _=Depends(require_permission("promotions.write")),
+    _=Depends(require_admin_permission("promotions.write")),
     db: AsyncSession = Depends(get_db),
 ):
     """新增優惠券"""
@@ -96,7 +96,7 @@ async def create_coupon(
 @router.get("/coupons/{coupon_id}", response_model=SuccessResponse)
 async def get_coupon(
     coupon_id: int,
-    _=Depends(require_permission("promotions.read")),
+    _=Depends(require_admin_permission("promotions.read")),
     db: AsyncSession = Depends(get_db),
 ):
     """取得優惠券詳情"""
@@ -127,7 +127,7 @@ async def get_coupon(
 async def update_coupon(
     coupon_id: int,
     data: CouponUpdate,
-    _=Depends(require_permission("promotions.write")),
+    _=Depends(require_admin_permission("promotions.write")),
     db: AsyncSession = Depends(get_db),
 ):
     """更新優惠券"""
@@ -148,7 +148,7 @@ async def update_coupon(
 @router.delete("/coupons/{coupon_id}", response_model=SuccessResponse)
 async def delete_coupon(
     coupon_id: int,
-    _=Depends(require_permission("promotions.delete")),
+    _=Depends(require_admin_permission("promotions.delete")),
     db: AsyncSession = Depends(get_db),
 ):
     """停用優惠券"""

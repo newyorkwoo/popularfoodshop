@@ -39,7 +39,7 @@ def create_access_token(
     expire = now + expires_delta
 
     payload = {
-        "sub": user_id,
+        "sub": str(user_id),
         "role": role,
         "type": "access",
         "iat": now,
@@ -61,7 +61,7 @@ def create_refresh_token(
     expire = now + expires_delta
 
     payload = {
-        "sub": user_id,
+        "sub": str(user_id),
         "type": "refresh",
         "iat": now,
         "exp": expire,

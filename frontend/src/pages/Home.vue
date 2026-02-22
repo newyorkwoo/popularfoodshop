@@ -162,9 +162,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import ProductCard from '@/components/product/ProductCard.vue'
-import { useAdminProductStore } from '@/stores/adminProduct'
+import { loadProductStatus, getProductStatus } from '@/data/products'
 import {
   ArrowRightIcon,
   ShieldCheckIcon,
@@ -172,13 +172,7 @@ import {
   TruckIcon,
 } from '@heroicons/vue/24/outline'
 
-const adminProductStore = useAdminProductStore()
-
-const archivedIds = computed(() => new Set(
-  adminProductStore.products
-    .filter(p => p.status === 'archived')
-    .map(p => p.id)
-))
+const statusReady = ref(false)
 
 const categories = [
   { name: '人氣零食', slug: 'popular-snacks', icon: '🍿' },
@@ -210,7 +204,16 @@ const allNewProducts = [
   { id: 10, name: '義大利Lavazza 經典中焙咖啡豆 250g', slug: 'lavazza-classico-250', brand: 'Lavazza', price: 380, image: 'https://placehold.co/400x400/EFEBE9/4E342E?text=Lavazza', rating: 4.7, reviewCount: 134, isNew: true, inStock: true },
 ]
 
-// Filter out archived products
-const featuredProducts = computed(() => allFeatured.filter(p => !archivedIds.value.has(p.id)))
-const newProducts = computed(() => allNewProducts.filter(p => !archivedIds.value.has(p.id)))
+function isActive(p) {
+  const s = getProductStatus()
+  return s[String(p.id)] !== 'archived'
+}
+
+const featuredProducts = computed(() => statusReady.value ? allFeatured.filter(isActive) : allFeatured)
+const newProducts = computed(() => statusReady.value ? allNewProducts.filter(isActive) : allNewProducts)
+
+onMounted(async () => {
+  await loadProductStatus()
+  statusReady.value = true
+})
 </script>

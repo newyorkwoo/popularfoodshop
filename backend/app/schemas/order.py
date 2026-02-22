@@ -137,6 +137,7 @@ class OrderStatusUpdate(BaseModel):
 class ReturnCreate(BaseModel):
     reason: str
     description: Optional[str] = None
+    images: Optional[List[str]] = None  # 退貨照片 URLs
     items: Optional[List[Dict[str, Any]]] = None  # [{product_id, quantity}]
 
 

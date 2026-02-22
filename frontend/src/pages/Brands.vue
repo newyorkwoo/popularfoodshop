@@ -21,8 +21,10 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { getProductsByBrand } from '@/data/products'
+import { computed, ref, onMounted } from 'vue'
+import { getProductsByBrand, loadProductStatus } from '@/data/products'
+
+const statusReady = ref(false)
 
 const brandList = [
   { id: 1, name: '和牛專門店', slug: 'wagyu-shop', logo: 'https://placehold.co/100x100/FFF3E0/EA580C?text=和牛' },
@@ -44,4 +46,9 @@ const brands = computed(() =>
     productCount: getProductsByBrand(b.slug).length,
   }))
 )
+
+onMounted(async () => {
+  await loadProductStatus()
+  statusReady.value = true
+})
 </script>
