@@ -1,6 +1,6 @@
 <template>
-  <div :class="['animate-pulse rounded', shapeClasses]" :style="customStyle">
-    <div class="bg-gray-200 rounded w-full h-full" />
+  <div :class="['rounded', shapeClasses]" :style="customStyle">
+    <div class="animate-shimmer bg-gray-200 rounded w-full h-full" />
   </div>
 </template>
 

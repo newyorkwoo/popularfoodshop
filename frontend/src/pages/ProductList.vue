@@ -1,10 +1,10 @@
 <template>
   <div class="container mx-auto px-4 py-8">
     <!-- Breadcrumb -->
-    <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
-      <router-link to="/" class="hover:text-primary-600">{{ $t('common.home') }}</router-link>
-      <span>/</span>
-      <span class="text-gray-900">商品列表</span>
+    <nav class="flex items-center gap-2 text-sm text-gray-400 mb-8">
+      <router-link to="/" class="hover:text-primary-600 transition-colors">{{ $t('common.home') }}</router-link>
+      <span class="text-gray-300">/</span>
+      <span class="text-gray-700 font-medium">商品列表</span>
     </nav>
 
     <div class="flex gap-8">
@@ -12,13 +12,13 @@
       <aside class="hidden lg:block w-64 shrink-0">
         <div class="sticky top-24 space-y-6">
           <!-- Categories -->
-          <div>
-            <h3 class="font-semibold text-gray-900 mb-3">{{ $t('product.filterCategory') }}</h3>
-            <ul class="space-y-2">
+          <div class="bg-white rounded-2xl border border-gray-100 p-5">
+            <h3 class="font-bold text-gray-900 mb-4 text-sm">{{ $t('product.filterCategory') }}</h3>
+            <ul class="space-y-1">
               <li v-for="cat in categories" :key="cat.slug">
                 <button
-                  class="text-sm transition-colors"
-                  :class="productStore.filters.category === cat.slug ? 'text-primary-600 font-medium' : 'text-gray-600 hover:text-gray-900'"
+                  class="w-full text-left text-sm px-3 py-2 rounded-lg transition-all"
+                  :class="productStore.filters.category === cat.slug ? 'bg-primary-50 text-primary-600 font-semibold' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
                   @click="toggleFilter('category', cat.slug)"
                 >
                   {{ cat.name }}
@@ -28,12 +28,12 @@
           </div>
 
           <!-- Price range -->
-          <div>
-            <h3 class="font-semibold text-gray-900 mb-3">{{ $t('product.filterPrice') }}</h3>
-            <ul class="space-y-2">
+          <div class="bg-white rounded-2xl border border-gray-100 p-5">
+            <h3 class="font-bold text-gray-900 mb-4 text-sm">{{ $t('product.filterPrice') }}</h3>
+            <ul class="space-y-1">
               <li v-for="range in priceRanges" :key="range.label">
                 <button
-                  class="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                  class="w-full text-left text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2 rounded-lg transition-all"
                   @click="setPrice(range.min, range.max)"
                 >
                   {{ range.label }}
@@ -45,7 +45,7 @@
           <!-- Clear filters -->
           <button
             v-if="productStore.activeFiltersCount > 0"
-            class="text-sm text-red-600 hover:text-red-700 font-medium"
+            class="w-full text-sm text-red-600 hover:text-red-700 font-semibold py-2.5 border border-red-200 rounded-xl hover:bg-red-50 transition-all"
             @click="productStore.clearFilters()"
           >
             清除所有篩選 ({{ productStore.activeFiltersCount }})
@@ -56,20 +56,20 @@
       <!-- Main content -->
       <div class="flex-1 min-w-0">
         <!-- Toolbar -->
-        <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center justify-between mb-6 bg-white rounded-2xl border border-gray-100 px-5 py-3.5">
           <p class="text-sm text-gray-500">
-            共 <span class="font-medium text-gray-900">{{ productStore.pagination.total }}</span> 件商品
+            共 <span class="font-bold text-gray-900">{{ productStore.pagination.total }}</span> 件商品
           </p>
           <div class="flex items-center gap-3">
             <!-- Mobile filter toggle -->
-            <button class="lg:hidden flex items-center gap-1 text-sm text-gray-700 border rounded-lg px-3 py-2" @click="showMobileFilters = true">
+            <button class="lg:hidden flex items-center gap-1.5 text-sm text-gray-700 border border-gray-200 rounded-xl px-4 py-2 hover:bg-gray-50 transition-colors" @click="showMobileFilters = true">
               <FunnelIcon class="w-4 h-4" />
               篩選
             </button>
             <!-- Sort -->
             <select
               v-model="productStore.filters.sort"
-              class="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-200"
+              class="text-sm border border-gray-200 rounded-xl px-4 py-2 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 bg-white transition-all"
               @change="loadProducts"
             >
               <option value="newest">{{ $t('product.sortNewest') }}</option>
@@ -83,7 +83,7 @@
 
         <!-- Product grid -->
         <div v-if="productStore.loading" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-          <div v-for="i in 12" :key="i" class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div v-for="i in 12" :key="i" class="bg-white rounded-2xl border border-gray-100 overflow-hidden animate-shimmer">
             <BaseSkeleton width="100%" height="250px" shape="rect" />
             <div class="p-4 space-y-2">
               <BaseSkeleton width="60%" height="14px" />
@@ -93,9 +93,12 @@
           </div>
         </div>
 
-        <div v-else-if="productStore.products.length === 0" class="text-center py-20">
-          <MagnifyingGlassIcon class="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <p class="text-lg text-gray-500">{{ $t('common.noResults') }}</p>
+        <div v-else-if="productStore.products.length === 0" class="text-center py-24">
+          <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-5">
+            <MagnifyingGlassIcon class="w-10 h-10 text-gray-300" />
+          </div>
+          <p class="text-lg font-medium text-gray-500">{{ $t('common.noResults') }}</p>
+          <p class="text-sm text-gray-400 mt-1">請嘗試調整篩選條件</p>
         </div>
 
         <div v-else class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
@@ -103,7 +106,7 @@
         </div>
 
         <!-- Pagination -->
-        <div v-if="productStore.pagination.totalPages > 1" class="mt-10">
+        <div v-if="productStore.pagination.totalPages > 1" class="mt-12">
           <BasePagination
             :model-value="productStore.pagination.page"
             :total-pages="productStore.pagination.totalPages"
@@ -120,13 +123,13 @@
       </Transition>
       <Transition name="slide-left">
         <div v-if="showMobileFilters" class="fixed inset-y-0 right-0 w-80 max-w-full bg-white z-50 shadow-2xl lg:hidden overflow-y-auto">
-          <div class="flex items-center justify-between p-4 border-b border-gray-200">
+          <div class="flex items-center justify-between p-5 border-b border-gray-100">
             <h3 class="text-lg font-bold text-gray-900">篩選條件</h3>
-            <button class="p-2 text-gray-500 hover:text-gray-700" @click="showMobileFilters = false">
+            <button class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all" @click="showMobileFilters = false">
               <XMarkIcon class="w-5 h-5" />
             </button>
           </div>
-          <div class="p-4 space-y-6">
+          <div class="p-5 space-y-6">
             <!-- Categories -->
             <div>
               <h4 class="font-semibold text-gray-900 mb-3">{{ $t('product.filterCategory') }}</h4>

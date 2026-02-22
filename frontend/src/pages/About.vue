@@ -3,7 +3,7 @@
       <h1 class="text-3xl font-bold text-gray-900 mb-8">關於我們</h1>
 
       <div class="prose prose-lg max-w-none">
-        <div class="bg-gradient-to-r from-primary-50 to-orange-50 rounded-2xl p-8 mb-10">
+        <div class="bg-linear-to-r from-primary-50 to-orange-50 rounded-2xl p-8 mb-10">
           <h2 class="text-2xl font-bold text-primary-700 mb-4">🍜 人氣美食商店</h2>
           <p class="text-gray-700 leading-relaxed">
             我們是台灣領先的精品食材電商平台，致力於為消費者嚴選世界各地的頂級食材與美味食品。

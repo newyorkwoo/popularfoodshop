@@ -2,7 +2,7 @@
   <div>
     <h2 class="text-xl font-bold text-gray-900 mb-6">會員點數</h2>
 
-    <div class="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl p-6 text-white mb-8">
+    <div class="bg-linear-to-r from-yellow-400 to-orange-500 rounded-2xl p-6 text-white mb-8">
       <p class="text-sm opacity-80">可用點數</p>
       <p class="text-3xl font-black mt-1">{{ points.toLocaleString() }} 點</p>
       <p class="text-sm opacity-80 mt-2">等值 NT${{ Math.floor(points / 10).toLocaleString() }}（每 10 點折 NT$1）</p>

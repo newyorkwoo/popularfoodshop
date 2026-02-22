@@ -20,13 +20,36 @@ export default defineConfig({
     },
   },
   build: {
+    // Performance: enable CSS code splitting
+    cssCodeSplit: true,
+    // Increase chunk size warning limit
+    chunkSizeWarningLimit: 600,
+    // Minify with esbuild (fastest)
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ['vue', 'vue-router', 'pinia', 'axios'],
           ui: ['swiper', '@heroicons/vue'],
+          i18n: ['vue-i18n'],
+          forms: ['vee-validate', 'yup'],
         },
       },
     },
+    // Target modern browsers for smaller bundles
+    target: 'es2020',
+  },
+  // Dependency pre-bundling optimization
+  optimizeDeps: {
+    include: [
+      'vue',
+      'vue-router',
+      'pinia',
+      'axios',
+      'vue-i18n',
+      'nprogress',
+      '@heroicons/vue/24/outline',
+      '@heroicons/vue/24/solid',
+    ],
   },
 })

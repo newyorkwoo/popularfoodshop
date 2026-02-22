@@ -13,6 +13,10 @@ from starlette.responses import Response
 logger = structlog.get_logger()
 
 
+# Alias for backward compatibility
+RequestLoggingMiddleware = None  # defined below
+
+
 class LoggingMiddleware(BaseHTTPMiddleware):
     """Log incoming requests and response times"""
 
@@ -42,3 +46,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         response.headers["X-Process-Time"] = f"{process_time:.4f}"
 
         return response
+
+
+# Alias so main.py's `from app.middleware.logging import RequestLoggingMiddleware` works
+RequestLoggingMiddleware = LoggingMiddleware

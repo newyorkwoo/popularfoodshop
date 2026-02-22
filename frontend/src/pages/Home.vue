@@ -1,52 +1,73 @@
 <template>
   <div>
     <!-- Hero Banner -->
-    <section class="relative bg-gradient-to-r from-primary-600 to-primary-800 text-white overflow-hidden">
-      <div class="container mx-auto px-4 py-16 md:py-24 relative z-10">
+    <section class="relative bg-linear-to-br from-primary-700 via-primary-600 to-primary-800 text-white overflow-hidden">
+      <div class="container mx-auto px-4 py-20 md:py-28 relative z-10">
         <div class="max-w-2xl">
-          <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-4">
-            精選全球美味<br />盡在人氣美食商店
+          <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-white/15 backdrop-blur-sm rounded-full text-sm font-medium mb-6">
+            <SparklesIcon class="w-4 h-4 text-amber-300" />
+            新品上架優惠中
+          </div>
+          <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-5">
+            精選全球美味<br /><span class="text-gradient-warm">盡在人氣美食</span>
           </h1>
-          <p class="text-lg text-primary-100 mb-8">
+          <p class="text-lg text-primary-100/90 mb-10 leading-relaxed max-w-lg">
             從日本零食到手工巧克力，從健康穀物到有機食品，為您嚴選世界各地優質美食。
           </p>
-          <router-link
-            to="/products"
-            class="inline-flex items-center gap-2 px-8 py-3 bg-white text-primary-700 font-semibold rounded-full hover:bg-primary-50 transition-colors"
-          >
-            {{ $t('home.heroCTA') }}
-            <ArrowRightIcon class="w-5 h-5" />
-          </router-link>
+          <div class="flex flex-wrap gap-4">
+            <router-link
+              to="/products"
+              class="inline-flex items-center gap-2.5 px-8 py-3.5 bg-white text-primary-700 font-bold rounded-full hover:bg-primary-50 hover:shadow-xl hover:shadow-white/20 transition-all duration-300 text-sm"
+            >
+              {{ $t('home.heroCTA') }}
+              <ArrowRightIcon class="w-4 h-4" />
+            </router-link>
+            <router-link
+              to="/products?sort=newest"
+              class="inline-flex items-center gap-2 px-8 py-3.5 bg-white/10 text-white font-semibold rounded-full hover:bg-white/20 backdrop-blur-sm transition-all duration-300 border border-white/20 text-sm"
+            >
+              探索新品
+            </router-link>
+          </div>
         </div>
       </div>
-      <div class="absolute inset-0 opacity-10">
-        <div class="absolute -right-20 -top-20 w-96 h-96 bg-white rounded-full" />
-        <div class="absolute -left-10 -bottom-10 w-72 h-72 bg-white rounded-full" />
+      <!-- Decorative elements -->
+      <div class="absolute inset-0 opacity-[0.07]">
+        <div class="absolute -right-20 -top-20 w-120 h-120 bg-white rounded-full animate-pulse-soft" />
+        <div class="absolute -left-10 -bottom-10 w-80 h-80 bg-white rounded-full animate-pulse-soft" style="animation-delay: 1s" />
+        <div class="absolute right-1/3 top-1/2 w-48 h-48 bg-white rounded-full animate-float" />
       </div>
     </section>
 
     <!-- Category Showcase -->
-    <section class="container mx-auto px-4 py-12">
-      <h2 class="text-2xl font-bold text-gray-900 mb-8 text-center">熱門分類</h2>
+    <section class="container mx-auto px-4 py-14">
+      <div class="text-center mb-10">
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">熱門分類</h2>
+        <p class="text-gray-500 text-sm">探索各種美味分類，找到您的最愛</p>
+      </div>
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         <router-link
-          v-for="cat in categories"
+          v-for="(cat, i) in categories"
           :key="cat.slug"
           :to="{ name: 'ProductList', params: { slug: cat.slug } }"
-          class="group flex flex-col items-center p-4 bg-white rounded-xl border border-gray-200 hover:border-primary-300 hover:shadow-md transition-all"
+          class="group flex flex-col items-center p-5 bg-white rounded-2xl border border-gray-100 hover:border-primary-200 hover:shadow-lg hover:shadow-primary-100/50 transition-all duration-300 hover:-translate-y-1"
+          :style="{ animationDelay: i * 50 + 'ms' }"
         >
-          <span class="text-4xl mb-3">{{ cat.icon }}</span>
-          <span class="text-sm font-medium text-gray-700 group-hover:text-primary-600">{{ cat.name }}</span>
+          <span class="text-4xl mb-3 group-hover:scale-110 transition-transform duration-300">{{ cat.icon }}</span>
+          <span class="text-sm font-semibold text-gray-700 group-hover:text-primary-600 transition-colors">{{ cat.name }}</span>
         </router-link>
       </div>
     </section>
 
     <!-- Featured Products -->
-    <section class="bg-gray-50 py-12">
+    <section class="bg-gray-50/80 py-14">
       <div class="container mx-auto px-4">
         <div class="flex items-center justify-between mb-8">
-          <h2 class="text-2xl font-bold text-gray-900">{{ $t('home.featuredTitle') }}</h2>
-          <router-link to="/products" class="text-sm text-primary-600 hover:text-primary-700 font-medium flex items-center gap-1">
+          <div>
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-900">{{ $t('home.featuredTitle') }}</h2>
+            <p class="text-gray-500 text-sm mt-1">為您精心挑選的人氣商品</p>
+          </div>
+          <router-link to="/products" class="text-sm text-primary-600 hover:text-primary-700 font-semibold flex items-center gap-1.5 hover:gap-2.5 transition-all">
             {{ $t('common.viewAll') }}
             <ArrowRightIcon class="w-4 h-4" />
           </router-link>
@@ -58,38 +79,45 @@
     </section>
 
     <!-- Promotional Banner -->
-    <section class="container mx-auto px-4 py-12">
+    <section class="container mx-auto px-4 py-14">
       <div class="grid md:grid-cols-2 gap-6">
-        <div class="relative bg-gradient-to-br from-secondary-500 to-secondary-700 rounded-2xl p-8 text-white overflow-hidden">
-          <h3 class="text-2xl font-bold mb-2">有機食品專區</h3>
-          <p class="text-secondary-100 mb-4">精選認證有機食品，吃得安心又健康</p>
+        <div class="group relative bg-linear-to-br from-emerald-500 to-emerald-700 rounded-2xl p-8 md:p-10 text-white overflow-hidden hover:shadow-xl hover:shadow-emerald-500/20 transition-all duration-500">
+          <h3 class="text-2xl md:text-3xl font-bold mb-2">有機食品專區</h3>
+          <p class="text-emerald-100 mb-6 text-sm md:text-base">精選認證有機食品，吃得安心又健康</p>
           <router-link
             to="/products?category=organic-food"
-            class="inline-block px-6 py-2 bg-white text-secondary-700 font-medium rounded-full hover:bg-secondary-50 transition-colors text-sm"
+            class="inline-flex items-center gap-2 px-6 py-2.5 bg-white text-emerald-700 font-semibold rounded-full hover:bg-emerald-50 transition-colors text-sm"
           >
             立即選購
+            <ArrowRightIcon class="w-4 h-4" />
           </router-link>
-          <div class="absolute -right-8 -bottom-8 w-40 h-40 bg-white/10 rounded-full" />
+          <div class="absolute -right-8 -bottom-8 w-44 h-44 bg-white/10 rounded-full group-hover:scale-125 transition-transform duration-500" />
+          <div class="absolute right-12 bottom-12 w-20 h-20 bg-white/5 rounded-full group-hover:scale-150 transition-transform duration-700" />
         </div>
-        <div class="relative bg-gradient-to-br from-amber-500 to-amber-700 rounded-2xl p-8 text-white overflow-hidden">
-          <h3 class="text-2xl font-bold mb-2">日本零食祭</h3>
-          <p class="text-amber-100 mb-4">直送日本人氣零食，限時優惠中</p>
+        <div class="group relative bg-linear-to-br from-amber-500 to-orange-600 rounded-2xl p-8 md:p-10 text-white overflow-hidden hover:shadow-xl hover:shadow-amber-500/20 transition-all duration-500">
+          <h3 class="text-2xl md:text-3xl font-bold mb-2">日本零食祭</h3>
+          <p class="text-amber-100 mb-6 text-sm md:text-base">直送日本人氣零食，限時優惠中</p>
           <router-link
             to="/products?category=japanese-snacks"
-            class="inline-block px-6 py-2 bg-white text-amber-700 font-medium rounded-full hover:bg-amber-50 transition-colors text-sm"
+            class="inline-flex items-center gap-2 px-6 py-2.5 bg-white text-amber-700 font-semibold rounded-full hover:bg-amber-50 transition-colors text-sm"
           >
             立即選購
+            <ArrowRightIcon class="w-4 h-4" />
           </router-link>
-          <div class="absolute -right-8 -bottom-8 w-40 h-40 bg-white/10 rounded-full" />
+          <div class="absolute -right-8 -bottom-8 w-44 h-44 bg-white/10 rounded-full group-hover:scale-125 transition-transform duration-500" />
+          <div class="absolute right-12 bottom-12 w-20 h-20 bg-white/5 rounded-full group-hover:scale-150 transition-transform duration-700" />
         </div>
       </div>
     </section>
 
     <!-- New Arrivals -->
-    <section class="container mx-auto px-4 py-12">
+    <section class="container mx-auto px-4 py-14">
       <div class="flex items-center justify-between mb-8">
-        <h2 class="text-2xl font-bold text-gray-900">新品上架</h2>
-        <router-link to="/products?sort=newest" class="text-sm text-primary-600 hover:text-primary-700 font-medium flex items-center gap-1">
+        <div>
+          <h2 class="text-2xl md:text-3xl font-bold text-gray-900">新品上架</h2>
+          <p class="text-gray-500 text-sm mt-1">最新到貨的優質好物</p>
+        </div>
+        <router-link to="/products?sort=newest" class="text-sm text-primary-600 hover:text-primary-700 font-semibold flex items-center gap-1.5 hover:gap-2.5 transition-all">
           {{ $t('common.viewAll') }}
           <ArrowRightIcon class="w-4 h-4" />
         </router-link>
@@ -100,26 +128,35 @@
     </section>
 
     <!-- Trust Badges -->
-    <section class="bg-gray-900 text-white py-12">
-      <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-          <div class="flex flex-col items-center">
-            <ShieldCheckIcon class="w-10 h-10 text-primary-400 mb-3" />
-            <h3 class="font-semibold text-lg mb-1">{{ $t('home.trustAuth') }}</h3>
-            <p class="text-sm text-gray-400">{{ $t('home.trustAuthDesc') }}</p>
+    <section class="bg-gray-900 text-white py-14 relative overflow-hidden">
+      <div class="container mx-auto px-4 relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 text-center">
+          <div class="flex flex-col items-center group">
+            <div class="w-16 h-16 bg-primary-500/20 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-primary-500/30 transition-colors">
+              <ShieldCheckIcon class="w-8 h-8 text-primary-400" />
+            </div>
+            <h3 class="font-bold text-lg mb-1.5">{{ $t('home.trustAuth') }}</h3>
+            <p class="text-sm text-gray-400 leading-relaxed">{{ $t('home.trustAuthDesc') }}</p>
           </div>
-          <div class="flex flex-col items-center">
-            <SparklesIcon class="w-10 h-10 text-primary-400 mb-3" />
-            <h3 class="font-semibold text-lg mb-1">{{ $t('home.trustQuality') }}</h3>
-            <p class="text-sm text-gray-400">{{ $t('home.trustQualityDesc') }}</p>
+          <div class="flex flex-col items-center group">
+            <div class="w-16 h-16 bg-primary-500/20 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-primary-500/30 transition-colors">
+              <SparklesIcon class="w-8 h-8 text-primary-400" />
+            </div>
+            <h3 class="font-bold text-lg mb-1.5">{{ $t('home.trustQuality') }}</h3>
+            <p class="text-sm text-gray-400 leading-relaxed">{{ $t('home.trustQualityDesc') }}</p>
           </div>
-          <div class="flex flex-col items-center">
-            <TruckIcon class="w-10 h-10 text-primary-400 mb-3" />
-            <h3 class="font-semibold text-lg mb-1">{{ $t('home.trustShipping') }}</h3>
-            <p class="text-sm text-gray-400">{{ $t('home.trustShippingDesc') }}</p>
+          <div class="flex flex-col items-center group">
+            <div class="w-16 h-16 bg-primary-500/20 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-primary-500/30 transition-colors">
+              <TruckIcon class="w-8 h-8 text-primary-400" />
+            </div>
+            <h3 class="font-bold text-lg mb-1.5">{{ $t('home.trustShipping') }}</h3>
+            <p class="text-sm text-gray-400 leading-relaxed">{{ $t('home.trustShippingDesc') }}</p>
           </div>
         </div>
       </div>
+      <!-- Decorative -->
+      <div class="absolute top-0 left-1/4 w-96 h-96 bg-primary-500/5 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 right-1/4 w-72 h-72 bg-primary-500/5 rounded-full blur-3xl"></div>
     </section>
   </div>
 </template>

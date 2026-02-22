@@ -318,13 +318,23 @@ const router = createRouter({
   routes,
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) return savedPosition
-    return { top: 0 }
+    // Smooth scroll for anchor links
+    if (to.hash) {
+      return { el: to.hash, behavior: 'smooth' }
+    }
+    return { top: 0, behavior: 'smooth' }
   },
 })
 
+// NProgress configuration
+NProgress.configure({ showSpinner: false, speed: 300, minimum: 0.2 })
+
 // Navigation guards
 router.beforeEach((to, from, next) => {
-  NProgress.start()
+  // Only show progress bar for actual page changes
+  if (to.path !== from.path) {
+    NProgress.start()
+  }
 
   // Set page title
   const baseTitle = 'Popular Food Shop'

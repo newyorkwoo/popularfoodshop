@@ -1,19 +1,20 @@
 <template>
   <nav class="flex items-center justify-center gap-1" aria-label="Pagination">
     <button
-      class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+      class="p-2 rounded-xl text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
       :disabled="modelValue <= 1"
       @click="emit('update:modelValue', modelValue - 1)"
     >
       <ChevronLeftIcon class="w-5 h-5" />
     </button>
 
-    <template v-for="page in visiblePages" :key="page">
-      <span v-if="page === '...'" class="px-2 text-gray-400">…</span>
+    <template v-for="page in visiblePages">
+      <span v-if="page === '...'" :key="'dots-' + page" class="px-2 text-gray-300 select-none">…</span>
       <button
         v-else
-        class="w-10 h-10 rounded-lg text-sm font-medium transition-colors"
-        :class="page === modelValue ? 'bg-primary-600 text-white' : 'text-gray-700 hover:bg-gray-100'"
+        :key="page"
+        class="w-10 h-10 rounded-xl text-sm font-semibold transition-all"
+        :class="page === modelValue ? 'bg-primary-600 text-white shadow-md shadow-primary-600/25' : 'text-gray-600 hover:bg-gray-100'"
         @click="emit('update:modelValue', page)"
       >
         {{ page }}
@@ -21,7 +22,7 @@
     </template>
 
     <button
-      class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+      class="p-2 rounded-xl text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
       :disabled="modelValue >= totalPages"
       @click="emit('update:modelValue', modelValue + 1)"
     >

@@ -1,15 +1,15 @@
 <template>
-  <div class="fixed top-4 right-4 z-[100] space-y-2 pointer-events-none">
+  <div class="fixed top-4 right-4 z-100 space-y-2.5 pointer-events-none">
     <transition-group name="toast">
       <div
         v-for="toast in uiStore.toasts"
         :key="toast.id"
-        class="pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg min-w-[280px] max-w-sm"
+        class="pointer-events-auto flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-xl backdrop-blur-sm min-w-75 max-w-sm"
         :class="toastClasses(toast.type)"
       >
         <component :is="toastIcon(toast.type)" class="w-5 h-5 shrink-0" />
-        <p class="text-sm font-medium flex-1">{{ toast.message }}</p>
-        <button @click="uiStore.removeToast(toast.id)" class="shrink-0 opacity-60 hover:opacity-100">
+        <p class="text-sm font-semibold flex-1">{{ toast.message }}</p>
+        <button @click="uiStore.removeToast(toast.id)" class="shrink-0 opacity-40 hover:opacity-100 transition-opacity">
           <XMarkIcon class="w-4 h-4" />
         </button>
       </div>
@@ -31,10 +31,10 @@ const uiStore = useUIStore()
 
 function toastClasses(type) {
   const map = {
-    success: 'bg-green-50 text-green-800 border border-green-200',
-    error: 'bg-red-50 text-red-800 border border-red-200',
-    warning: 'bg-yellow-50 text-yellow-800 border border-yellow-200',
-    info: 'bg-blue-50 text-blue-800 border border-blue-200',
+    success: 'bg-green-50/95 text-green-800 border border-green-200/80',
+    error: 'bg-red-50/95 text-red-800 border border-red-200/80',
+    warning: 'bg-amber-50/95 text-amber-800 border border-amber-200/80',
+    info: 'bg-blue-50/95 text-blue-800 border border-blue-200/80',
   }
   return map[type] || map.info
 }
@@ -52,20 +52,20 @@ function toastIcon(type) {
 
 <style scoped>
 .toast-enter-active {
-  transition: all 0.3s ease;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .toast-leave-active {
-  transition: all 0.2s ease;
+  transition: all 0.25s ease-in;
 }
 .toast-enter-from {
   opacity: 0;
-  transform: translateX(100px);
+  transform: translateX(100px) scale(0.95);
 }
 .toast-leave-to {
   opacity: 0;
-  transform: translateX(100px);
+  transform: translateX(100px) scale(0.95);
 }
 .toast-move {
-  transition: transform 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 </style>

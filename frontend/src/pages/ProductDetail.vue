@@ -1,12 +1,12 @@
 <template>
   <div class="container mx-auto px-4 py-8">
     <!-- Breadcrumb -->
-    <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
-      <router-link to="/" class="hover:text-primary-600">{{ $t('common.home') }}</router-link>
-      <span>/</span>
-      <router-link to="/products" class="hover:text-primary-600">商品列表</router-link>
-      <span>/</span>
-      <span class="text-gray-900 line-clamp-1">{{ product?.name || '...' }}</span>
+    <nav class="flex items-center gap-2 text-sm text-gray-400 mb-8">
+      <router-link to="/" class="hover:text-primary-600 transition-colors">{{ $t('common.home') }}</router-link>
+      <span class="text-gray-300">/</span>
+      <router-link to="/products" class="hover:text-primary-600 transition-colors">商品列表</router-link>
+      <span class="text-gray-300">/</span>
+      <span class="text-gray-700 font-medium line-clamp-1">{{ product?.name || '...' }}</span>
     </nav>
 
     <!-- Loading -->
@@ -31,19 +31,19 @@
     <div v-else-if="product" class="grid lg:grid-cols-2 gap-8 lg:gap-12">
       <!-- Gallery -->
       <div class="space-y-4">
-        <div class="aspect-square bg-gray-100 rounded-2xl overflow-hidden">
+        <div class="aspect-square bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
           <img
             :src="currentImage"
             :alt="product.name"
-            class="w-full h-full object-cover"
+            class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
           />
         </div>
-        <div v-if="product.images?.length > 1" class="flex gap-2 overflow-x-auto pb-2">
+        <div v-if="product.images?.length > 1" class="flex gap-2.5 overflow-x-auto pb-2">
           <button
             v-for="(img, i) in product.images"
             :key="i"
-            class="w-20 h-20 shrink-0 rounded-lg overflow-hidden border-2 transition-colors"
-            :class="selectedImageIndex === i ? 'border-primary-600' : 'border-gray-200'"
+            class="w-20 h-20 shrink-0 rounded-xl overflow-hidden border-2 transition-all duration-200 hover:scale-105"
+            :class="selectedImageIndex === i ? 'border-primary-600 ring-2 ring-primary-100' : 'border-gray-200 hover:border-gray-300'"
             @click="selectedImageIndex = i"
           >
             <img :src="img" :alt="`${product.name} ${i+1}`" class="w-full h-full object-cover" />
@@ -57,21 +57,21 @@
         <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">{{ product.name }}</h1>
 
         <!-- Rating -->
-        <div v-if="product.rating" class="flex items-center gap-2 mb-4">
-          <div class="flex">
+        <div v-if="product.rating" class="flex items-center gap-2.5 mb-5">
+          <div class="flex gap-0.5">
             <StarIcon
               v-for="i in 5"
               :key="i"
               class="w-5 h-5"
-              :class="i <= Math.round(product.rating) ? 'text-yellow-400' : 'text-gray-200'"
+              :class="i <= Math.round(product.rating) ? 'text-amber-400 fill-amber-400' : 'text-gray-200'"
             />
           </div>
-          <span class="text-sm text-gray-600">{{ product.rating }} ({{ product.reviewCount }} 則評價)</span>
+          <span class="text-sm text-gray-500">{{ product.rating }} ({{ product.reviewCount }} 則評價)</span>
         </div>
 
         <!-- Price -->
-        <div class="flex items-center gap-3 mb-6">
-          <span class="text-3xl font-bold" :class="product.salePrice ? 'text-red-600' : 'text-gray-900'">
+        <div class="flex items-baseline gap-3 mb-6 bg-gray-50 rounded-xl px-5 py-4">
+          <span class="text-3xl font-extrabold" :class="product.salePrice ? 'text-red-600' : 'text-gray-900'">
             NT${{ (product.salePrice || product.price).toLocaleString() }}
           </span>
           <span v-if="product.salePrice" class="text-lg text-gray-400 line-through">
@@ -85,21 +85,21 @@
         <!-- Stock status -->
         <div class="flex items-center gap-2 mb-6">
           <span
-            class="w-2 h-2 rounded-full"
+            class="w-2.5 h-2.5 rounded-full animate-pulse"
             :class="product.inStock !== false ? 'bg-green-500' : 'bg-red-500'"
           />
-          <span class="text-sm" :class="product.inStock !== false ? 'text-green-700' : 'text-red-700'">
+          <span class="text-sm font-medium" :class="product.inStock !== false ? 'text-green-700' : 'text-red-700'">
             {{ product.inStock !== false ? $t('product.inStock') : $t('product.outOfStock') }}
           </span>
         </div>
 
         <!-- Quantity -->
         <div class="flex items-center gap-4 mb-6">
-          <span class="text-sm font-medium text-gray-700">數量</span>
-          <div class="flex items-center border border-gray-300 rounded-lg">
-            <button class="px-3 py-2 text-gray-600 hover:text-gray-900" @click="quantity = Math.max(1, quantity - 1)">−</button>
-            <input v-model.number="quantity" type="number" min="1" class="w-16 text-center border-x border-gray-300 py-2 text-sm" />
-            <button class="px-3 py-2 text-gray-600 hover:text-gray-900" @click="quantity++">+</button>
+          <span class="text-sm font-semibold text-gray-700">數量</span>
+          <div class="flex items-center border border-gray-200 rounded-xl overflow-hidden">
+            <button class="px-3.5 py-2.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors" @click="quantity = Math.max(1, quantity - 1)">−</button>
+            <input v-model.number="quantity" type="number" min="1" class="w-16 text-center border-x border-gray-200 py-2.5 text-sm font-medium bg-gray-50" />
+            <button class="px-3.5 py-2.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors" @click="quantity++">+</button>
           </div>
         </div>
 
@@ -116,27 +116,27 @@
         </div>
 
         <!-- Tabs -->
-        <div class="border-t border-gray-200">
-          <div class="flex gap-6 border-b border-gray-200">
+        <div class="border-t border-gray-100 mt-2">
+          <div class="flex gap-1">
             <button
               v-for="tab in tabs"
               :key="tab.key"
-              class="py-3 text-sm font-medium border-b-2 transition-colors"
-              :class="activeTab === tab.key ? 'border-primary-600 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+              class="py-3.5 px-4 text-sm font-semibold border-b-2 transition-all"
+              :class="activeTab === tab.key ? 'border-primary-600 text-primary-600 bg-primary-50/50' : 'border-transparent text-gray-400 hover:text-gray-600 hover:bg-gray-50'"
               @click="activeTab = tab.key"
             >
               {{ tab.label }}
             </button>
           </div>
-          <div class="py-4">
-            <div v-if="activeTab === 'description'" class="prose prose-sm max-w-none text-gray-600">
+          <div class="py-5">
+            <div v-if="activeTab === 'description'" class="prose prose-sm max-w-none text-gray-600 leading-relaxed">
               <p>{{ product.description || '暫無商品描述。' }}</p>
             </div>
-            <div v-else-if="activeTab === 'nutrition'" class="text-sm text-gray-600">
+            <div v-else-if="activeTab === 'nutrition'" class="text-sm text-gray-600 leading-relaxed">
               <p>{{ product.nutrition || '暫無營養資訊。' }}</p>
             </div>
             <div v-else-if="activeTab === 'reviews'">
-              <p class="text-sm text-gray-500">{{ $t('product.reviews') }}功能即將推出。</p>
+              <p class="text-sm text-gray-400">{{ $t('product.reviews') }}功能即將推出。</p>
             </div>
           </div>
         </div>
@@ -144,8 +144,8 @@
     </div>
 
     <!-- Related products -->
-    <section v-if="relatedProducts.length > 0" class="mt-16">
-      <h2 class="text-2xl font-bold text-gray-900 mb-6">{{ $t('product.relatedProducts') }}</h2>
+    <section v-if="relatedProducts.length > 0" class="mt-20">
+      <h2 class="text-2xl font-bold text-gray-900 mb-8">{{ $t('product.relatedProducts') }}</h2>
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
         <ProductCard v-for="p in relatedProducts" :key="p.id" :product="p" />
       </div>

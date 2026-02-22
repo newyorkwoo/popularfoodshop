@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50">
+  <div class="min-h-screen flex items-center justify-center bg-linear-to-br from-primary-50 to-secondary-50">
     <div class="w-full max-w-md mx-4">
       <div class="text-center mb-8">
         <router-link to="/" class="inline-block">

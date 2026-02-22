@@ -2,7 +2,7 @@
   <div>
     <h2 class="text-xl font-bold text-gray-900 mb-6">購物金</h2>
 
-    <div class="bg-gradient-to-r from-primary-500 to-orange-500 rounded-2xl p-6 text-white mb-8">
+    <div class="bg-linear-to-r from-primary-500 to-orange-500 rounded-2xl p-6 text-white mb-8">
       <p class="text-sm opacity-80">可用購物金</p>
       <p class="text-3xl font-black mt-1">NT${{ credits.toLocaleString() }}</p>
     </div>

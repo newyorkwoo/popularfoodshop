@@ -1,23 +1,23 @@
 <template>
   <teleport to="body">
     <transition name="modal">
-      <div v-if="modelValue" class="fixed inset-0 z-[60] flex items-center justify-center p-4">
+      <div v-if="modelValue" class="fixed inset-0 z-60 flex items-center justify-center p-4">
         <!-- Backdrop -->
-        <div class="absolute inset-0 bg-black/50" @click="closeOnBackdrop && close()" />
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="closeOnBackdrop && close()" />
 
         <!-- Modal -->
         <div
           :class="[
-            'relative bg-white rounded-2xl shadow-xl w-full max-h-[90vh] flex flex-col',
+            'relative bg-white rounded-2xl shadow-2xl w-full max-h-[90vh] flex flex-col',
             sizeClasses,
           ]"
         >
           <!-- Header -->
-          <div v-if="title || $slots.header" class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+          <div v-if="title || $slots.header" class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
             <slot name="header">
-              <h3 class="text-lg font-semibold text-gray-900">{{ title }}</h3>
+              <h3 class="text-lg font-bold text-gray-900">{{ title }}</h3>
             </slot>
-            <button v-if="closable" @click="close" class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+            <button v-if="closable" @click="close" class="p-1.5 text-gray-400 hover:text-gray-600 rounded-xl hover:bg-gray-100 transition-all">
               <XMarkIcon class="w-5 h-5" />
             </button>
           </div>
@@ -28,7 +28,7 @@
           </div>
 
           <!-- Footer -->
-          <div v-if="$slots.footer" class="px-6 py-4 border-t border-gray-200">
+          <div v-if="$slots.footer" class="px-6 py-4 border-t border-gray-100 bg-gray-50/50 rounded-b-2xl">
             <slot name="footer" />
           </div>
         </div>
@@ -74,10 +74,10 @@ watch(() => props.modelValue, (val) => {
 
 <style scoped>
 .modal-enter-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .modal-enter-active > div:last-child {
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
 }
 .modal-leave-active {
   transition: opacity 0.2s ease;
@@ -89,7 +89,10 @@ watch(() => props.modelValue, (val) => {
 .modal-leave-to {
   opacity: 0;
 }
-.modal-enter-from > div:last-child,
+.modal-enter-from > div:last-child {
+  transform: scale(0.92) translateY(10px);
+  opacity: 0;
+}
 .modal-leave-to > div:last-child {
   transform: scale(0.95);
   opacity: 0;
