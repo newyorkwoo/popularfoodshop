@@ -20,11 +20,11 @@
       </div>
     </div>
 
-    <!-- Placeholder Chart -->
+    <!-- Revenue Trend Chart -->
     <div class="bg-white border border-gray-200 rounded-xl p-6 mb-6">
-      <h3 class="font-bold text-gray-900 mb-4">營收趨勢</h3>
-      <div class="h-64 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400">
-        <p>📊 圖表區域（整合 Chart.js 後顯示）</p>
+      <h3 class="font-bold text-gray-900 mb-4 text-center">營收趨勢</h3>
+      <div class="h-64">
+        <Line :data="chartData" :options="chartOptions" />
       </div>
     </div>
 
@@ -60,6 +60,20 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useAdminOrderStore } from '@/stores/adminOrder'
+import { Line } from 'vue-chartjs'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+} from 'chart.js'
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler)
 
 const store = useAdminOrderStore()
 const activePeriod = ref('month')
@@ -70,8 +84,53 @@ const statusLabels = { pending: '待付款', processing: '處理中', shipped: '
 
 const validOrders = computed(() => store.orders.filter(o => o.status !== 'cancelled'))
 
-const totalRevenue = computed(() => validOrders.value.reduce((s, o) => s + o.total, 0))
-const orderCount = computed(() => validOrders.value.length)
+/* ---- period filtering ---- */
+function pad2(n) { return String(n).padStart(2, '0') }
+function fmtDate(d) { return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}` }
+
+function getTodayUTC8() {
+  // 取得 UTC+8 的當天日期字串 (YYYY-MM-DD)
+  const now = new Date()
+  const utc8 = new Date(now.getTime() + (now.getTimezoneOffset() + 480) * 60000)
+  return fmtDate(utc8)
+}
+
+function getStartDate(period) {
+  const todayStr = getTodayUTC8()
+  const today = new Date(todayStr + 'T00:00:00')
+
+  switch (period) {
+    case 'today':
+      return todayStr
+    case 'week': {
+      const d = new Date(today)
+      d.setDate(d.getDate() - 6)
+      return fmtDate(d)
+    }
+    case 'month': {
+      const d = new Date(today)
+      d.setMonth(d.getMonth() - 1)
+      d.setDate(d.getDate() + 1)
+      return fmtDate(d)
+    }
+    case 'quarter': {
+      const d = new Date(today)
+      d.setMonth(d.getMonth() - 3)
+      d.setDate(d.getDate() + 1)
+      return fmtDate(d)
+    }
+    default:
+      return '1970-01-01'
+  }
+}
+
+const filteredOrders = computed(() => {
+  const start = getStartDate(activePeriod.value)
+  return validOrders.value.filter(o => o.date >= start)
+})
+
+const totalRevenue = computed(() => filteredOrders.value.reduce((s, o) => s + o.total, 0))
+const orderCount = computed(() => filteredOrders.value.length)
 const avgOrder = computed(() => orderCount.value ? Math.round(totalRevenue.value / orderCount.value) : 0)
 
 const summary = computed(() => [
@@ -86,7 +145,7 @@ const categoryIcons = { '肉品海鮮': '🥩', '調味醬料': '🫙', '茶葉�
 
 const topCategories = computed(() => {
   const map = {}
-  validOrders.value.forEach(o => {
+  filteredOrders.value.forEach(o => {
     o.items.forEach(item => {
       const cat = item.category || '其他'
       if (!map[cat]) map[cat] = 0
@@ -106,7 +165,8 @@ const topCategories = computed(() => {
 /* ---- recent activity derived from orders ---- */
 const activities = computed(() => {
   const acts = []
-  const sorted = [...store.orders].sort((a, b) => b.date.localeCompare(a.date))
+  const start = getStartDate(activePeriod.value)
+  const sorted = [...store.orders].filter(o => o.date >= start).sort((a, b) => b.date.localeCompare(a.date))
   sorted.slice(0, 5).forEach(o => {
     const label = statusLabels[o.status] || o.status
     const colors = {
@@ -122,4 +182,61 @@ const activities = computed(() => {
   })
   return acts
 })
+
+/* ---- revenue trend chart ---- */
+const chartData = computed(() => {
+  // aggregate daily revenue from filtered orders, sorted by date
+  const map = {}
+  filteredOrders.value.forEach(o => {
+    map[o.date] = (map[o.date] || 0) + o.total
+  })
+  const sorted = Object.entries(map).sort((a, b) => a[0].localeCompare(b[0]))
+  const labels = sorted.map(([d]) => d.slice(5)) // MM-DD
+  const data = sorted.map(([, v]) => v)
+
+  return {
+    labels,
+    datasets: [
+      {
+        label: '營收 (NT$)',
+        data,
+        borderColor: '#6366f1',
+        backgroundColor: 'rgba(99,102,241,0.1)',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 4,
+        pointBackgroundColor: '#6366f1',
+      },
+    ],
+  }
+})
+
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      callbacks: {
+        label: (ctx) => `NT$${ctx.parsed.y.toLocaleString()}`,
+      },
+    },
+  },
+  scales: {
+    x: {
+      title: { display: true, text: '日期', color: '#6b7280', font: { size: 13, weight: 'bold' } },
+      grid: { display: false },
+      ticks: { color: '#9ca3af' },
+    },
+    y: {
+      title: { display: true, text: '營收 (NT$)', color: '#6b7280', font: { size: 13, weight: 'bold' } },
+      beginAtZero: true,
+      ticks: {
+        color: '#9ca3af',
+        callback: (v) => `$${v.toLocaleString()}`,
+      },
+      grid: { color: '#f3f4f6' },
+    },
+  },
+}
 </script>

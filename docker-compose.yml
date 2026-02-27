@@ -13,9 +13,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: popularfoodshop
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${POSTGRES_DB:-popularfoodshop}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?請在 .env 中設定 POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -51,7 +51,7 @@ services:
     env_file:
       - ./backend/.env
     environment:
-      DATABASE_URL: postgresql+asyncpg://postgres:postgres@db:5432/popularfoodshop
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:?err}@db:5432/${POSTGRES_DB:-popularfoodshop}
       REDIS_URL: redis://redis:6379/0
     depends_on:
       db:
@@ -73,6 +73,7 @@ services:
       - "3000:3000"
     volumes:
       - ./frontend:/app
+      - ./shared:/shared
       - /app/node_modules
     command: npm run dev -- --host 0.0.0.0
 
@@ -87,6 +88,7 @@ services:
       - "3001:3001"
     volumes:
       - ./frontend-admin:/app
+      - ./shared:/shared
       - /app/node_modules
     command: npm run dev -- --host 0.0.0.0
 

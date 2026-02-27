@@ -4,6 +4,7 @@ Usage: python -m app.seeds.seed
 """
 
 import asyncio
+import os
 import sys
 from pathlib import Path
 
@@ -24,11 +25,35 @@ from app.utils.security import hash_password
 
 
 async def seed_users(db: AsyncSession):
-    """建立預設管理員和測試帳號"""
+    """建立預設管理員和測試帳號（帳密從環境變數讀取）"""
+    admin_email = os.environ.get("SEED_ADMIN_EMAIL", "admin@popularfoodshop.com")
+    admin_password = os.environ.get("SEED_ADMIN_PASSWORD")
+    if not admin_password:
+        raise RuntimeError(
+            "SEED_ADMIN_PASSWORD 環境變數未設定。"
+            "請在 .env 中設定 SEED_ADMIN_PASSWORD 後再執行 seed。"
+        )
+
+    editor_email = os.environ.get("SEED_EDITOR_EMAIL", "editor@popularfoodshop.com")
+    editor_password = os.environ.get("SEED_EDITOR_PASSWORD")
+    if not editor_password:
+        raise RuntimeError(
+            "SEED_EDITOR_PASSWORD 環境變數未設定。"
+            "請在 .env 中設定 SEED_EDITOR_PASSWORD 後再執行 seed。"
+        )
+
+    user_email = os.environ.get("SEED_USER_EMAIL", "user@example.com")
+    user_password = os.environ.get("SEED_USER_PASSWORD")
+    if not user_password:
+        raise RuntimeError(
+            "SEED_USER_PASSWORD 環境變數未設定。"
+            "請在 .env 中設定 SEED_USER_PASSWORD 後再執行 seed。"
+        )
+
     users = [
         User(
-            email="admin@popularfoodshop.com",
-            password_hash=hash_password("Admin@123456"),
+            email=admin_email,
+            password_hash=hash_password(admin_password),
             first_name="管理員",
             last_name="系統",
             role="super_admin",
@@ -38,8 +63,8 @@ async def seed_users(db: AsyncSession):
             credits=0,
         ),
         User(
-            email="editor@popularfoodshop.com",
-            password_hash=hash_password("Editor@123456"),
+            email=editor_email,
+            password_hash=hash_password(editor_password),
             first_name="編輯",
             last_name="內容",
             role="editor",
@@ -49,8 +74,8 @@ async def seed_users(db: AsyncSession):
             credits=0,
         ),
         User(
-            email="user@example.com",
-            password_hash=hash_password("User@123456"),
+            email=user_email,
+            password_hash=hash_password(user_password),
             first_name="會員",
             last_name="測試",
             phone="0912345678",

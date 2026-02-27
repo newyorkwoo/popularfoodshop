@@ -107,6 +107,14 @@ class Settings(BaseSettings):
     POINTS_EXPIRY_DAYS: int = 365
     REGISTER_BONUS_POINTS: int = 100
 
+    # ===== Seed Credentials (read from env, no defaults) =====
+    SEED_ADMIN_EMAIL: str = "admin@popularfoodshop.com"
+    SEED_ADMIN_PASSWORD: str = ""
+    SEED_EDITOR_EMAIL: str = "editor@popularfoodshop.com"
+    SEED_EDITOR_PASSWORD: str = ""
+    SEED_USER_EMAIL: str = "user@example.com"
+    SEED_USER_PASSWORD: str = ""
+
     # ===== Pagination =====
     DEFAULT_PAGE_SIZE: int = 20
     MAX_PAGE_SIZE: int = 50
@@ -119,7 +127,31 @@ class Settings(BaseSettings):
         return self.DATABASE_URL
 
 
+_INSECURE_DEFAULTS = {
+    "change-me-to-a-secure-random-key-in-production",
+    "change-me-admin-secret-key-in-production",
+    "change-me-to-another-secure-random-key",
+    "change-me-to-a-random-secret-key-in-production",
+    "change-me-jwt-secret-key-in-production",
+    "change-me-admin-jwt-secret-key-in-production",
+}
+
+
 @lru_cache()
 def get_settings() -> Settings:
-    """取得快取的設定實例"""
-    return Settings()
+    """取得快取的設定實例，並在 production 環境驗證安全性"""
+    settings = Settings()
+
+    if settings.ENVIRONMENT == "production":
+        insecure_keys = []
+        for attr in ("SECRET_KEY", "JWT_SECRET_KEY", "ADMIN_JWT_SECRET_KEY"):
+            val = getattr(settings, attr, "")
+            if val in _INSECURE_DEFAULTS or len(val) < 32:
+                insecure_keys.append(attr)
+        if insecure_keys:
+            raise RuntimeError(
+                f"Production 環境偵測到不安全的 secret key: {', '.join(insecure_keys)}。"
+                "請在 .env 中設定至少 32 字元的隨機字串。"
+            )
+
+    return settings
