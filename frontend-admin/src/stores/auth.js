@@ -4,15 +4,14 @@ import { useRouter } from 'vue-router'
 import authService from '@/services/authService'
 
 // Dev-mode mock accounts (admin roles only)
+// Passwords are NOT stored here — in DEV mode we match by email only.
 const MOCK_ADMIN_ACCOUNTS = [
   {
     email: 'admin@popularfoodshop.com',
-    password: 'Admin@123456',
     user: { id: 1, email: 'admin@popularfoodshop.com', firstName: '管理員', lastName: '系統', role: 'super_admin', phone: '' },
   },
   {
     email: 'editor@popularfoodshop.com',
-    password: 'Editor@123456',
     user: { id: 2, email: 'editor@popularfoodshop.com', firstName: '編輯', lastName: '內容', role: 'editor', phone: '' },
   },
 ]
@@ -35,10 +34,10 @@ export const useAdminAuthStore = defineStore('adminAuth', () => {
   })
   const userRole = computed(() => user.value?.role || '')
 
-  // Mock login for dev mode
+  // Mock login for dev mode — matches email only, no password stored in code
   function mockLogin(credentials) {
     const account = MOCK_ADMIN_ACCOUNTS.find(
-      (a) => a.email === credentials.email && a.password === credentials.password,
+      (a) => a.email === credentials.email,
     )
     if (!account) return null
     return {
